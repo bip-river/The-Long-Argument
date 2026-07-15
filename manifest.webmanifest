@@ -1,0 +1,13 @@
+{
+  "name": "The Long Argument",
+  "short_name": "Long Argument",
+  "description": "22 foundational works. Not a reading list — an argument.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0D1316",
+  "theme_color": "#0D1316",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
