@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Long Argument — 26 works, 4,000 years, one argument</title>
-<meta name="description" content="Briefings on 26 foundational works of Western literature and philosophy — Homer to Joyce. Not a reading list: a 4,000-year argument that never resolves.">
+<meta name="description" content="Briefings on 26 foundational works of Western literature and philosophy — Gilgamesh to Joyce. Not a reading list: a 4,000-year argument that never resolves.">
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#0D1316" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#DEDCD5" media="(prefers-color-scheme: light)">
 <meta property="og:type" content="website">
 <meta property="og:title" content="The Long Argument">
-<meta property="og:description" content="26 foundational works, from Homer to Joyce. Not a reading list — an argument that never resolves.">
+<meta property="og:description" content="26 foundational works, from Gilgamesh to Joyce. Not a reading list — an argument that never resolves.">
 <meta name="twitter:card" content="summary">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230D1316'/%3E%3Cpath d='M8 24V8h3.4v13.2H20V24H8z' fill='%234E9585'/%3E%3C/svg%3E">
@@ -477,9 +477,9 @@ function syncMasthead(){
   const brand = document.querySelector(".brand .lbl");
   if (brand) brand.textContent = `${n} works \u00b7 4,000 years`;
   const md = document.querySelector('meta[name="description"]');
-  if (md) md.setAttribute("content", `Briefings on ${n} foundational works of Western literature and philosophy \u2014 Homer to Joyce. Not a reading list: a 4,000-year argument that never resolves.`);
+  if (md) md.setAttribute("content", `Briefings on ${n} foundational works of Western literature and philosophy \u2014 Gilgamesh to Joyce. Not a reading list: a 4,000-year argument that never resolves.`);
   const og = document.querySelector('meta[property="og:description"]');
-  if (og) og.setAttribute("content", `${n} foundational works, from Homer to Joyce. Not a reading list \u2014 an argument that never resolves.`);
+  if (og) og.setAttribute("content", `${n} foundational works, from Gilgamesh to Joyce. Not a reading list \u2014 an argument that never resolves.`);
   // <title> and <noscript> can't be owned at runtime (title is replaced per-view; noscript shows only when JS is off) \u2014 warn if their hand-typed count has drifted.
   const stale = [...document.querySelectorAll("title, noscript")]
     .filter(el => /\b\d+\s+(?:works|foundational)/.test(el.textContent) && !el.textContent.includes(n + " "));
