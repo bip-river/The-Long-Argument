@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Long Argument — 22 works, 2,800 years, one argument</title>
-<meta name="description" content="Briefings on 22 foundational works of Western literature and philosophy — Homer to Joyce. Not a reading list: a 2,800-year argument that never resolves.">
+<title>The Long Argument — 26 works, 4,000 years, one argument</title>
+<meta name="description" content="Briefings on 26 foundational works of Western literature and philosophy — Homer to Joyce. Not a reading list: a 4,000-year argument that never resolves.">
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#0D1316" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#DEDCD5" media="(prefers-color-scheme: light)">
 <meta property="og:type" content="website">
 <meta property="og:title" content="The Long Argument">
-<meta property="og:description" content="22 foundational works, from Homer to Joyce. Not a reading list — an argument that never resolves.">
+<meta property="og:description" content="26 foundational works, from Homer to Joyce. Not a reading list — an argument that never resolves.">
 <meta name="twitter:card" content="summary">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230D1316'/%3E%3Cpath d='M8 24V8h3.4v13.2H20V24H8z' fill='%234E9585'/%3E%3C/svg%3E">
@@ -366,7 +366,7 @@
 <noscript>
   <div style="max-width:640px;margin:64px auto;padding:0 24px;font-family:Georgia,serif;line-height:1.6">
     <h1 style="font-size:28px;margin-bottom:12px">The Long Argument</h1>
-    <p>This is a reading app for 22 foundational works, and it needs JavaScript to run.
+    <p>This is a reading app for 26 foundational works, and it needs JavaScript to run.
        There is no tracking and no server — everything happens in your browser.
        Enable JavaScript and reload.</p>
   </div>
@@ -375,7 +375,7 @@
 <div class="scrim" id="scrim"></div>
 <div class="wrap">
   <aside class="rail" id="rail">
-    <div class="brand"><h1>The Long Argument</h1><p class="lbl">22 works · 2,800 years</p></div>
+    <div class="brand"><h1>The Long Argument</h1><p class="lbl">26 works · 4,000 years</p></div>
     <ol class="seq" id="seq"></ol>
   </aside>
 
@@ -428,6 +428,7 @@ const SEQUENCE = [
   {t:"The Timeline", slug:"timeline"},
 
   {t:"Scripture & myth", kids:[
+    {t:"The Epic of Gilgamesh", slug:"gilgamesh"},
     {t:"The Bible", slug:"bible"},
     {t:"Ovid · Metamorphoses", slug:"ovid"}
   ]},
@@ -447,11 +448,16 @@ const SEQUENCE = [
     {t:"Goethe · Faust", slug:"faust"}
   ]},
   {t:"Philosophy", kids:[
+    {t:"Plato · The Symposium", slug:"symposium"},
     {t:"Plato · The Republic", slug:"republic"},
-    {t:"Aristotle · Nicomachean Ethics", slug:"nicomachean-ethics"}
+    {t:"Aristotle · Nicomachean Ethics", slug:"nicomachean-ethics"},
+    {t:"Marcus Aurelius · Meditations", slug:"meditations"}
   ]},
   {t:"Confession", kids:[
     {t:"Augustine · Confessions", slug:"confessions"}
+  ]},
+  {t:"The essay", kids:[
+    {t:"Montaigne · Essays", slug:"montaigne"}
   ]},
   {t:"The novel", kids:[
     {t:"Don Quixote", slug:"quixote"},
@@ -462,6 +468,33 @@ const SEQUENCE = [
     {t:"Ulysses", slug:"ulysses"}
   ]}
 ];
+
+const WORK_COUNT = SEQUENCE.filter(w => w.kids).reduce((n, w) => n + w.kids.length, 0);
+
+// Keep every hand-typed corpus count downstream of SEQUENCE so it can't drift.
+function syncMasthead(){
+  const n = WORK_COUNT;
+  const brand = document.querySelector(".brand .lbl");
+  if (brand) brand.textContent = `${n} works \u00b7 4,000 years`;
+  const md = document.querySelector('meta[name="description"]');
+  if (md) md.setAttribute("content", `Briefings on ${n} foundational works of Western literature and philosophy \u2014 Homer to Joyce. Not a reading list: a 4,000-year argument that never resolves.`);
+  const og = document.querySelector('meta[property="og:description"]');
+  if (og) og.setAttribute("content", `${n} foundational works, from Homer to Joyce. Not a reading list \u2014 an argument that never resolves.`);
+  // <title> and <noscript> can't be owned at runtime (title is replaced per-view; noscript shows only when JS is off) \u2014 warn if their hand-typed count has drifted.
+  const stale = [...document.querySelectorAll("title, noscript")]
+    .filter(el => /\b\d+\s+(?:works|foundational)/.test(el.textContent) && !el.textContent.includes(n + " "));
+  if (stale.length) console.warn("[Long Argument] corpus-count drift: SEQUENCE has " + n + " works, but a static <title>/<noscript> shows a different number \u2014 update the hand-typed count in index.html.");
+}
+
+const SHELF_NOTES = {
+  "Scripture & myth": `Gilgamesh, the Bible, Ovid. Not a form so much as the <b>ground</b> — the library of plots and images every later form is built out of. It doesn't rise or fall; it just keeps getting quoted.`,
+  "Epic": `Homer, Virgil, Dante, Milton — and then <b>it stops.</b> The form that carried the West for 2,400 years ends in 1667 and nobody writes another one.`,
+  "Drama": `Three Greeks, two Shakespeares, and Goethe — whose <em>Faust</em> is a play that <b>cannot be staged.</b> The form dies by becoming unperformable.`,
+  "Philosophy": `Plato, Aristotle, Marcus. The <b>argument</b>, not the story — and the one thing here still being written today. It never had to die, because it was never trying to be performed.`,
+  "Confession": `Augustine, alone. He invented the inside of a person in AD 400, and then <b>nobody used it for a thousand years.</b>`,
+  "The essay": `Montaigne, 1580. Augustine's inward gaze made secular — no altar, no salvation arc, just a mind watching itself. The form the novel will swallow whole a generation later.`,
+  "The novel": `Does not exist before 1605. Then it <b>eats everything</b> — and by the end of this list it is the only form still standing.`,
+};
 
 const WORKS = {
 
@@ -498,7 +531,7 @@ const WORKS = {
     {b:"It is not part one of a trilogy.", p:"Antigone was written roughly twelve years <em>earlier</em>. The 'Theban plays' were never conceived as a set and were never performed as one."}
   ],
   take:`<p>The prophecy is close to a red herring. Delete the gods entirely and the play still runs: a man investigates a crime, discovers he committed it, and destroys himself. The engine is character, not fate — which is why it survives translation into every century that stops believing in oracles.</p>`,
-  counter:`<p>That reading flatters us, and an Athenian audience would not recognise it. For them the architecture <em>is</em> the gods, and the lesson is not the heroism of inquiry but the smallness of human knowing. The chorus ends the play by telling you to count no man happy until he is dead — not to admire him for asking questions.</p>`,
+  counter:`<p>An Athenian in that first audience would not have recognised this reading. For them the architecture <em>is</em> the gods, and the lesson is not the heroism of inquiry but the smallness of human knowing. The chorus ends the play by telling you to count no man happy until he is dead — not to admire him for asking questions.</p>`,
   people:[
     {k:"Oedipus", v:"King of Thebes. Outsider, problem-solver, short fuse. Killed his father, married his mother, and is the last person in the play to find out."},
     {ref:"jocasta", here:"Works out the truth one scene before Oedipus does, and chooses to hang herself rather than say it aloud."},
@@ -607,6 +640,7 @@ const WORKS = {
   <p>Aristotle assumes all of that. He assumes you have time to cultivate excellence, friends of quality, and enough money that generosity is available to you — and he says outright that a life of grinding poverty makes flourishing very hard. That is either honest realism or a comfortable man's excuse, and reasonable people split on it.</p>
   <p>The reason it survived is a long detour: lost to the Latin West for centuries, preserved and argued over by Arabic philosophers — Al-Farabi, Averroes — and re-imported to Europe in the 12th century, where Aquinas made it the backbone of Christian moral thought. Which is exactly how it ends up structuring Hell.</p>`,
   echoes:[
+    {k:"→ Meditations", to:"meditations", v:"The Stoic rebuttal. Aristotle: virtue needs practice, time, and some luck. Marcus: virtue alone suffices, it is entirely up to you, and you can hold it even on the rack. The two great ancient answers to 'how to live,' opposed."},
     {k:"→ Oedipus Rex", to:"oedipus-rex", v:"Aristotle built his theory of tragedy — hamartia, reversal, recognition — largely out of that one play."},
     {k:"→ Dante", to:"dante", v:"Not a vague influence: in <em>Inferno</em> XI, Virgil pauses to explain the architecture of Hell, and the explanation is a citation of Aristotle's Ethics. The sins are sorted by his categories."},
     {k:"→ Pride and Prejudice", v:"A virtue-ethics novel in disguise. Nobody is converted by an argument; Elizabeth and Darcy are <em>trained</em> out of their faults by experience, slowly, which is exactly Aristotle's account of how character changes."},
@@ -662,7 +696,7 @@ const WORKS = {
     {k:"Buck Mulligan", v:"Stephen's flatmate. Funny, cruel, a mocker. The friend who is not a friend."},
     {k:"Blazes Boylan", v:"Molly's manager and lover. Loud, confident, hollow. Arrives at four. Joyce gives him almost no interior life at all — that's the judgement."},
     {k:"Rudy", v:"The son who lived eleven days. Appears once, silently, as a hallucination at the end of the brothel episode. It is the emotional centre of the book."},
-    {k:"The Homeric parallel", v:"Each of the eighteen episodes shadows a scene from the <em>Odyssey</em>: Bloom is Odysseus, Stephen is Telemachus (the son seeking a father), Molly is a very unfaithful Penelope. The Citizen is the Cyclops; Nighttown is Circe's island. Ordinary Dublin laid over the greatest voyage in literature.",to:"odyssey"},
+    {k:"The Homeric parallel", v:"Each of the eighteen episodes shadows a scene from the <em>Odyssey</em>: Bloom is Odysseus, Stephen is Telemachus (the son seeking a father), Molly is a very unfaithful Penelope. The Citizen is the Cyclops; Nighttown is Circe's island. Ordinary Dublin laid over one of the greatest voyages in literature.",to:"odyssey"},
     {k:"The Citizen", v:"Nationalist, antisemite, one-eyed in every sense. The Cyclops."},
     {k:"Nora Barnacle", v:"Not in the book; the reason for it. Joyce set the novel on the day of their first walk together, 16 June 1904."}
   ],
@@ -687,6 +721,7 @@ const WORKS = {
   <p>Joyce left Ireland at 22 and never lived there again. He then wrote about nothing else for the rest of his life. The book was serialised in a small American magazine until the courts stopped it for obscenity in 1921, and published in full on 2 February 1922 — his fortieth birthday — by Sylvia Beach, an American woman who ran a Paris bookshop and had no business publishing anything.</p>
   <p>Banned in the United States until a judge ruled in 1933 that it was not pornographic, merely difficult. Ireland never formally banned it. Irish booksellers simply did not stock it.</p>`,
   echoes:[
+    {k:"→ Montaigne", to:"montaigne", v:"The road Montaigne opened, taken to its limit: if one ordinary private mind watched honestly is fit matter for literature, Bloom's day is that principle at seven hundred pages."},
     {k:"→ The Odyssey", to:"odyssey", v:"The load-bearing structure. Eighteen episodes, eighteen Homeric correspondences, all ironic. The Odyssey is the blueprint — read it and this book changes shape."},
     {k:"→ Hamlet", to:"hamlet", v:"Stephen spends an entire chapter in the library arguing that Shakespeare is not the prince but the murdered father. Fathers and sons who fail to recognise each other: that is also the plot of this book."},
     {k:"→ Oedipus Rex", to:"oedipus-rex", v:"A son who cannot escape a father, a father who cannot find a son. Freud is in the air of 1922 and Joyce is playing with him, and against him."},
@@ -696,6 +731,73 @@ const WORKS = {
 }
 
 
+,
+
+"symposium": {
+  file:"04.1", title:"The Symposium", author:"Plato", date:"c. 385 BC",
+  form:"Philosophy · dialogue · seven speeches on love",
+  read:"Brief: 5 min",
+  spineLabel:"What it is",
+  oneline:"A drinking party where seven Athenians take turns making speeches in praise of love — and between them they invent the soulmate, the word 'Platonic,' and the idea that desire is a ladder to the divine.",
+  spine:`
+  <p class="lede">The most charming thing Plato ever wrote, and the origin of half of how the West still talks about love. The setup is a dinner: the tragic poet <b>Agathon</b> has just won his first prize, and his guests, hungover, agree to skip the heavy drinking and instead each give a <b>speech in praise of Eros</b> — Love.</p>
+  <p>The speeches climb. But two of them became immortal.</p>
+  <p>First, the comic playwright <b>Aristophanes</b> tells a myth. Humans were once round, doubled creatures — <b>four arms, four legs, two faces</b> — of three kinds: male-male, female-female, and male-female. They were so strong they threatened the gods, so <b>Zeus split every one of them in half.</b> Ever since, each of us is a walking half, aching for the other half we were cut from. <b>That is where the 'soulmate' comes from</b> — the idea that somewhere out there is your missing piece. It is 2,400 years old, and it started as a joke given to a comedian.</p>
+  <p>Then <b>Socrates</b> speaks — and says he is only repeating what a wise priestess, <b>Diotima</b>, once taught him. Her image is the <b>ladder of love</b>: you begin by loving one beautiful body, then realise beauty is in all beautiful bodies, then in beautiful minds, then in laws and ideas, then in knowledge itself — until at the top you glimpse <b>Beauty itself</b>, eternal and pure. Desire is not a trap. It is a staircase, and the bottom rung is a person you want to touch, and the top rung is God, more or less.</p>
+  <p>And then the doors bang open and a beautiful, brilliant, drunk <b>Alcibiades</b> falls in, and instead of praising Love he praises Socrates — the ugliest and most irresistible man in Athens — and admits, to a room full of people, that he once tried to seduce the philosopher and was gently, devastatingly turned down.</p>`,
+  why:`
+  <p class="lede">Because two ideas that everyone alive still uses were both minted in this one room, and most people have them backwards.</p>
+  <p><b>'Soulmate'</b> is Aristophanes': the other half, the missing piece, the person who completes you. It is intoxicating — and Plato frames it as the <em>comedian's</em> speech, and then has Diotima quietly overturn it. Because on the ladder, the beloved is not your destination; the beloved is the <b>first step</b>. Loving one person is where you start, not where you stop — the point is to let that love lift you toward something that cannot die.</p>
+  <p>And <b>'Platonic love'</b> is Diotima's — except almost everyone now uses it to mean 'love without the sex,' a friendship, and that is nearly the opposite of what Plato meant. Platonic love <em>starts</em> with physical desire for a beautiful body; it just refuses to stop there. It is erotic longing rerouted and climbing, all the way up. The phrase we use for de-sexed affection was coined for the most intense sublimation of eros ever described.</p>
+  <p>Under both is the move that makes Plato Plato: the visible, particular, perishable thing you want — this body, this person — is a rung toward the invisible, universal, eternal thing behind it. Love, like everything in Plato, points past the world to the <b>Forms.</b></p>`,
+  sticky:[
+    {h:"The soulmate was invented as a joke.", p:"The four-armed rolling proto-humans, split by Zeus, each searching forever for their lost half — the most romantic idea in Western culture — is given to <b>Aristophanes</b>, the comedian, as the funny speech. Plato believed in a higher love than this, and he stages the soulmate myth precisely so Diotima can climb past it. We kept the joke and forgot the correction."},
+    {h:"'Platonic love' means almost the opposite of what you think.", p:"It does not mean 'just friends.' Diotima's ladder <em>begins</em> in physical desire — wanting to touch one beautiful body — and treats that desire as the raw fuel for an ascent toward Beauty itself. Platonic love is sublimated eros at full burn, not the absence of it. The modern meaning is a 2,000-year-old misunderstanding."},
+    {h:"The ladder of love.", p:"One beautiful body → all beautiful bodies → beautiful souls → beautiful laws and institutions → beautiful knowledge → <b>Beauty itself.</b> Each rung is a widening, a letting-go of the particular for the general, until the lover is in contact with something eternal. It is the same shape as the cave and the divided line in the Republic — desire made into an escape route from the changing world."},
+    {h:"The wisest voice in Plato is a woman who may not have existed.", p:"Socrates claims he learned everything he knows about love from <b>Diotima of Mantinea</b>, a priestess. She is very likely Plato's invention — and it is striking that he puts the dialogue's highest teaching in the mouth of a woman, when women were absent from this world of male drinking parties. The summit of the argument is spoken by the one person who could not have been in the room."},
+    {h:"Alcibiades' entrance.", p:"The golden boy of Athens — beautiful, gifted, and destined to betray his city — crashes the party drunk and delivers a love speech not to Love but to Socrates, whom he compares to an ugly little statue that opens to reveal gods inside. He confesses he tried to seduce Socrates and failed. It is the most human scene in Plato: desire, wounded pride, and hero-worship, all at once."}
+  ],
+  idea:`
+  <p class="lede">Desire is not the enemy of the higher life — it is the engine of it. What you do with wanting decides everything.</p>
+  <p>Plato's rivals treated bodily desire as a distraction from wisdom. The <em>Symposium</em>'s radical claim is that they are the same energy: the pull you feel toward a beautiful face is the <em>bottom</em> of a staircase whose top is the love of truth. You do not kill desire to become wise; you educate it, rung by rung, until it is aimed at something that will not die.</p>
+  <p>Portable version: <b>love is a ladder, not a destination</b> — the person you long for is where the climb begins, not where it ends.</p>`,
+  wrong:[
+    {b:"'Platonic' does not mean non-sexual.", p:"The most common error about this book. Plato's ladder is built <em>out of</em> erotic desire and rises by transforming it, not by denying it. Using 'platonic' to mean a sexless friendship inverts his actual meaning."},
+    {b:"The soulmate speech is not Plato's own view.", p:"Aristophanes' beautiful myth of the other half is set up to be surpassed. Diotima explicitly corrects it: the goal is not reunion with one lost person but ascent toward Beauty. People quote the romantic half and skip the philosophical rebuttal."},
+    {b:"A 'symposium' was not a conference.", p:"The word means 'drinking together' — a Greek after-dinner party with wine, music, flute-girls, and talk. The modern academic 'symposium' is a very tame descendant of a considerably rowdier institution."},
+    {b:"It is not a dry treatise.", p:"It is funny, dramatic, and a little scandalous — full of hangovers, flirtation, interruptions, and a drunk gate-crash at the end. Plato is a great writer here first and an arguer second."}
+  ],
+  take:`<p>The <em>Symposium</em> is where you can watch a civilisation decide what love is going to mean — and then watch most of posterity keep the wrong half. Aristophanes gives us the soulmate: intoxicating, consoling, and, in Plato's hands, a beautiful error. Diotima gives us the ladder: colder, harder, and the thing Plato actually believed — that every desire for a particular beautiful thing is secretly a desire for the eternal, and that a life spent climbing that recognition is the best life there is. We took the soulmate and the word 'platonic' and got both of them backwards, which is its own kind of proof of how good a writer Plato was: the wrapping outlived the gift.</p>`,
+  counter:`<p>It is easy to side entirely with Diotima and treat Aristophanes as the sweet mistake — but that is arguably to miss what the dialogue gains by keeping both. The ladder can look chillingly impersonal: it uses the beloved as a stepping-stone and climbs off them toward an abstraction, which is not obviously how love at its best actually feels. Aristophanes' myth, for all its comedy, honours the stubborn particularity of loving <em>this</em> person and no substitute — something Diotima's ascent seems ready to leave behind. Plato may want us to choose the ladder. He was too good a writer to make the soulmate easy to give up, and readers have been refusing to give it up for 2,400 years.</p>`,
+  people:[
+    {ref:"socrates", here:"The last and highest speaker — who, characteristically, claims to know nothing himself and merely repeats what the priestess Diotima taught him. Then Alcibiades arrives and makes Socrates himself the object of a love speech."},
+    {k:"Diotima", v:"The priestess of Mantinea whom Socrates credits with teaching him the true nature of love — and the source of the ladder of love. Almost certainly Plato's invention, and pointedly a woman: the dialogue's deepest wisdom is placed in the one voice that could not have been at the party."},
+    {k:"Aristophanes", v:"The great comic playwright of Athens, here given the dialogue's most famous speech — the myth of the split humans searching for their other half. The origin of the soulmate, delivered by a comedian, and set up by Plato to be surpassed."},
+    {k:"Alcibiades", v:"The brilliant, beautiful, doomed golden boy of Athens — future traitor to his city — who crashes the party drunk and praises Socrates instead of Love, confessing he tried and failed to seduce him. Charisma and ruin in one person."},
+    {k:"Agathon", v:"The tragic poet hosting the party to celebrate his first prize. Young, handsome, and gracious — his own speech is the most polished and the emptiest, all style, teeing up Socrates to puncture it."}
+  ],
+  places:[
+    {k:"Agathon's house", v:"The setting: a private Athenian home the night after Agathon's tragedy won at the festival, 416 BC. The whole dialogue is one dinner party, remembered and retold at several removes — Plato frames it as a story about a story about that night."},
+    {k:"Athens", v:"The city at its glittering, dangerous height — and on the edge of catastrophe. Several men at this cheerful party, Alcibiades above all, will soon be caught up in the disasters that end Athens's golden age. The wine is warm; the dark is coming."}
+  ],
+  terms:[
+    {k:"Eros", v:"Not the cute cherub but the Greek force of desire — longing, want, the pull toward what one lacks. The whole dialogue is speeches in its praise, and Diotima redefines it as the soul's drive toward beauty and, ultimately, the eternal."},
+    {k:"the ladder of love (scala amoris)", v:"Diotima's ascent: from one beautiful body, to all bodies, to beautiful souls, to beautiful laws and knowledge, to Beauty itself. Desire educated upward until it touches the eternal. The erotic version of the climb out of the cave."},
+    {k:"Platonic love", v:"In its true sense: love that begins in physical desire and rises past it toward the Form of Beauty — sublimated eros, not sexless affection. The modern meaning ('just friends') nearly reverses Plato's."},
+    {k:"the other half", v:"Aristophanes' image: since Zeus split the original doubled humans, each person seeks the missing half they were cut from. The soulmate, in its original form — and, in the dialogue, the beautiful idea Diotima climbs past."},
+    {k:"symposium", v:"Literally 'drinking together' — an aristocratic Greek after-dinner party of wine, entertainment, and talk. The refined modern 'symposium' is its distant, sober descendant."}
+  ],
+  context:`
+  <p class="lede">A dialogue of Plato's middle period, set a generation before he wrote it, looking back at a golden Athens about to fall.</p>
+  <p>Plato wrote the <em>Symposium</em> around 385 BC but set it in 416 BC — before the disastrous Sicilian expedition, before Athens lost its long war, before Socrates was executed. The party's glow is deliberately backlit by everything the reader knows is coming, especially for Alcibiades, whose brilliance and betrayal helped bring Athens down.</p>
+  <p>It belongs to the same period as the <em>Republic</em>, and shares its engine: the conviction that the beautiful, changing things of this world are shadows or steps, and that the philosopher's task is to climb from them to the eternal Forms behind them. The <em>Republic</em> climbs through justice and knowledge; the <em>Symposium</em> climbs through desire. They are the same staircase, entered by different doors.</p>`,
+  echoes:[
+    {k:"→ The Republic", to:"republic", v:"The same ascent, through a different passion. The Republic climbs from shadows to the Form of the Good; the Symposium climbs from one beautiful body to the Form of Beauty. Plato's whole philosophy is this move — from the particular thing you can see to the eternal thing behind it."},
+    {k:"→ The Divine Comedy", to:"dante", v:"Diotima's ladder, made Christian and made flesh. Dante's love for one specific woman, Beatrice, becomes the force that lifts him rung by rung through Paradise to the vision of God. The ladder of love with a name and a face on the bottom step."},
+    {k:"→ Confessions", to:"confessions", v:"Augustine and his mother at Ostia, ascending together in conversation 'step by step' past all created things toward God, is Diotima's ladder in Christian dress — desire for the eternal, climbing past the world that merely points to it."},
+    {k:"→ Meditations", to:"meditations", v:"Two ancient routes to the eternal: Plato climbs toward it through love and beauty; the Stoic Marcus steadies himself by accepting the cosmic order as it is. Ascent versus acceptance — the two postures ancient philosophy leaves us."}
+  ]
+}
 ,
 
 "republic": {
@@ -768,6 +870,8 @@ const WORKS = {
   <p>And it's worse than a grudge. Plato was an aristocrat: his relatives Critias and Charmides were leaders of the Thirty Tyrants, the oligarchy that seized Athens after its defeat by Sparta and murdered its way through the citizenry. So Plato watched tyranny up close, through his own family — and then watched the restored democracy execute the best man he knew.</p>
   <p>He distrusted both. The Republic is what a man builds when he has seen the mob and the strongman and refuses to pick one.</p>`,
   echoes:[
+    {k:"→ The Symposium", to:"symposium", v:"The same climb through a different passion — the Symposium ascends from one beautiful body to the Form of Beauty, as the Republic ascends from shadows to the Form of the Good. Two doors onto one staircase."},
+    {k:"→ Meditations", to:"meditations", v:"Plato dreamed of the philosopher-king; Marcus Aurelius actually was one. The Meditations is the view from inside the fantasy — and it turns out to be mostly duty, exhaustion, and the effort not to be corrupted."},
     {k:"→ Nicomachean Ethics", to:"nicomachean-ethics", v:"Aristotle sat in the Academy for twenty years and then rejected the Forms as useless to anyone actually trying to live: a doctor treating a patient does not need the Form of Health. The Nicomachean Ethics is the argument they never finished."},
     {k:"→ Homer", to:"iliad", v:"The <em>Iliad</em> and the <em>Odyssey</em> — expelled from the city. The quarrel between philosophy and poetry begins here and never ends."},
     {k:"→ The Aeneid", to:"aeneid", v:"Plato banned the poets for making us weep at fictions. Virgil then wrote the fiction Augustine wept at."},
@@ -787,19 +891,19 @@ const WORKS = {
   oneline:"The greatest war poem ever written is about a man who refuses to fight, sulking in a tent, because someone took his girl.",
   spine:`
   <p class="lede">The first word of the poem, in Greek, is <em class="g">rage</em>. Not Troy. Not war. Not Achilles. The poem announces that its subject is an emotion.</p>
-  <p>It is year ten of the siege of Troy. Agamemnon, the commander, is forced to give up a captive girl, so he takes Briseis — the prize of Achilles, the best fighter alive — to save face. Achilles, publicly humiliated, walks off the field and stays off it.</p>
+  <p>It is year ten of the siege of Troy. Agamemnon, the commander, is forced to give up a captive girl, so he takes Briseis — the prize of Achilles, the best fighter in the army — to save face. Achilles, publicly humiliated, walks off the field and stays off it.</p>
   <p>He asks his mother, a sea-goddess, to have Zeus make the Greeks lose. She does. They lose. Men Achilles has known his whole life are slaughtered while he sits by his ships, and when an embassy comes offering the girl back and a fortune besides, <b>he says no.</b> He has worked out that no amount of loot buys back a life, and that he'd rather go home and live a long, obscure one.</p>
   <p>Then Patroclus — the man he loves most in the world — borrows his armour to frighten the Trojans, and Hector kills him.</p>
   <p>Achilles comes back. Not for Greece, not for Agamemnon, not for honour. For grief. He kills Hector, ties the body to his chariot, and drags it around the walls for twelve days while Hector's father, mother, and wife watch from the ramparts.</p>
   <p>And then the last book. Priam, King of Troy, an old man, walks alone at night into the tent of the man who killed his son. He kneels. He kisses Achilles' hands. They weep together — the father for his son, the killer for his own father, whom he will never see again — and Achilles gives the body back.</p>
   <p>The poem ends with Hector's funeral. Troy still stands. Achilles is still alive. Nothing is resolved.</p>`,
   why:`
-  <p class="lede">It is the first work of Western literature and it is already the most honest thing ever written about war.</p>
-  <p>Homer's method is relentless: nobody dies anonymously. Every spear-thrust stops the poem so you can be told the dead man's father, his home town, the wife who will not know for weeks. A minor Trojan gets four lines about the orchard he grew up in, and then his eyes are covered in darkness. Repeat, for hundreds of men. <b>The individuated death is invented here, and it has never been done better.</b></p>
+  <p class="lede">It is the first work of Western literature and it is already one of the most honest things ever written about war.</p>
+  <p>Homer's method is relentless: nobody dies anonymously. Every spear-thrust stops the poem so you can be told the dead man's father, his home town, the wife who will not know for weeks. A minor Trojan gets four lines about the orchard he grew up in, and then his eyes are covered in darkness. Repeat, for hundreds of men. <b>The individuated death is invented here, and it has rarely been done better.</b></p>
   <p>And underneath is Achilles' choice, which every heroic culture since has had to answer: he is told he can go home and live long and be forgotten, or stay and die young and be sung about forever. He picks the song. Then, in the sequel, when Odysseus meets him in the land of the dead, Achilles says he would rather be a living slave to a landless man than king of all the dead.</p>
   <p>Homer gives you the heroic bargain and the receipt.</p>`,
   sticky:[
-    {h:"It's not about the Trojan War.", p:"It covers about seven weeks of year ten. No wooden horse. No fall of Troy. Achilles doesn't even die in it. The action of the greatest war epic is a man in a tent, refusing to come out."},
+    {h:"It's not about the Trojan War.", p:"It covers about seven weeks of year ten. No wooden horse. No fall of Troy. Achilles doesn't even die in it. The action of this war epic is a man in a tent, refusing to come out."},
     {h:"He goes back for Patroclus, not for Greece.", p:"An embassy offers him treasure, the girl, and honour. He turns it down flat. Then they kill Patroclus and he comes out of the tent screaming, and the sound is so terrible the Trojan horses bolt."},
     {h:"Priam kisses the hands that killed his son.", p:"Old, alone, at night, in the enemy's tent. He puts his mouth on the hands that dragged his boy's corpse through the dirt, because it is the only currency he has left. Achilles thinks of his own father and starts to cry, and gives the body back. This is the last scene, and it is why the poem is immortal."},
     {h:"The shield.", p:"Book 18. Achilles' new armour is engraved with the entire world: a wedding, a harvest, a lawsuit, children dancing, a city at peace. He straps the life he chose <em>not</em> to have onto his arm and goes out to die."},
@@ -853,7 +957,7 @@ const WORKS = {
     {k:"the Myrmidons", v:"Achilles' own troops, fiercely loyal to him alone. When he withdraws, they withdraw — which is why his sulk cripples the whole army. The word now means blindly loyal followers."},
     {k:"the Achaeans / Argives / Danaans", v:"All three are Homer's words for 'the Greeks.' There was no word 'Greek' yet; he cycles through the names of their peoples. When you see any of the three, read 'the Greek side.'"},
     {k:"the aegis", v:"Zeus's storm-shield, sometimes carried by Athena — fringed with terror, it routs armies on sight. The word survives in English: to be 'under someone's aegis' is to be under their protection."},
-    {k:"menis", v:"The first word of the poem. Not ordinary anger — the wrath of a god, or of a man behaving like one."},
+    {k:"menis", v:"The word the poem opens with. Not ordinary anger — the wrath of a god, or of a man behaving like one."},
     {k:"kleos", v:"Glory, fame, the thing that is sung. Literally 'what is heard.' It is the only immortality on offer, and it requires you to die first."},
     {k:"the Homeric simile", v:"The battle stops and you are suddenly among farmers, or wolves, or a woman weighing wool to feed her children. The peacetime world floods in for six lines and then the spear lands. This is where the poem keeps its grief."},
     {ref:"xenia", here:"Paris ate Menelaus's food and left with his wife — the ultimate violation. The whole Trojan War is, at bottom, punishment for broken guest-friendship."},
@@ -864,6 +968,7 @@ const WORKS = {
   <p class="lede">Sung, not written. Composed around 750 BC about a war supposed to have happened five hundred years earlier — the distance between us and Shakespeare.</p>
   <p>It was performed aloud, from memory, by professionals, for audiences who already knew the story. Which means Homer is never telling you what happens next. He is telling you <em>how</em> it happens, and everybody in the room already knows Hector is going to die, and Homer knows they know, and he makes you watch him say goodbye to his wife anyway.</p>`,
   echoes:[
+    {k:"→ The Epic of Gilgamesh", to:"gilgamesh", v:"The template, 1,500 years earlier: the mightiest warrior alive destroyed not by an enemy but by grief for the man he loved. Achilles and Patroclus are Gilgamesh and Enkidu."},
     {k:"→ The Odyssey", to:"odyssey", v:"The sequel that inverts everything: cunning instead of force, home instead of glory, a man who wants to live."},
     {k:"→ The Aeneid", to:"aeneid", v:"Virgil rewrites this poem for the Romans and gives it to the losing side. The Trojans win in the end."},
     {k:"→ The Republic", to:"republic", v:"Plato throws Homer out of the ideal city for exactly the reasons the poem is great: it makes you feel things about the wrong people."},
@@ -907,7 +1012,7 @@ const WORKS = {
     {b:"It doesn't end at the reunion.", p:"After the bed, there's another book: the families of the murdered suitors come for revenge, and a goddess has to descend and impose an amnesty by force. Ithaca is one scene away from civil war when the poem stops."}
   ],
   take:`<p>Odysseus is not admirable, and the poem knows it. He is a liar, a self-mythologiser, and a man who lost 600 men and came home alone. The killing of the suitors is staged as housekeeping — and then he hangs twelve slave girls in a row for sleeping with the men occupying his house, which is one of the coldest passages in literature. He is the man who <em>came home</em>. That is not the same as the man who deserved to.</p>`,
-  counter:`<p>That is a modern ledger applied to an ancient world. The Homeric universe runs on <em>xenia</em> — the sacred bond between host and guest — and the suitors have spent four years eating another man's house, abusing his servants, and plotting to kill his child. They are not boyfriends; they are an occupation. In the poem's terms the slaughter is not a massacre but the restoration of law, and the maids were collaborators. You are entitled to find it horrifying. You are not entitled to find it inconsistent.</p>`,
+  counter:`<p>Odysseus is being tried under laws the poem has never heard of. The Homeric universe runs on <em>xenia</em> — the sacred bond between host and guest — and the suitors have spent four years eating another man's house, abusing his servants, and plotting to kill his child. They are not boyfriends; they are an occupation. In the poem's terms the slaughter is not a massacre but the restoration of law, and the maids were collaborators. You are entitled to find it horrifying. You are not entitled to find it inconsistent.</p>`,
   people:[
     {ref:"odysseus", here:"<em>Polytropos</em> — 'many-turning.' Soldier, liar, storyteller, carpenter. The first hero whose signature weapon is his mouth."},
     {k:"Penelope", v:"Twenty years of holding a house together by intelligence alone. She tests him harder than the gods did. Arguably the smartest person in Homer."},
@@ -950,6 +1055,7 @@ const WORKS = {
   <p>The Iliad was composed for an aristocratic warrior audience. The Odyssey belongs to a world of ships, trade, coastlines, and strangers — a Greece beginning to sail out and colonise, meeting people who might feed you or eat you. It is a poem about how you survive contact with the unknown, and its answer is: <b>lie, flatter, adapt, and never say your real name.</b></p>
   <p>Emily Wilson's 2017 version was the first <b>published English</b> translation by a woman — after some sixty English translations by men. (Anne Dacier had done it into French three hundred years earlier; Wilson credits her.) Wilson opens with 'Tell me about a complicated man,' and it caused a fight, which tells you the poem is still alive.</p>`,
   echoes:[
+    {k:"→ The Epic of Gilgamesh", to:"gilgamesh", v:"Gilgamesh crosses the world seeking immortality and fails; Odysseus is offered it outright by Calypso and says no. The same question, 1,500 years apart — and the later hero chooses a mortal life on purpose."},
     {k:"→ The Iliad", to:"iliad", v:"Its opposite. Force against cunning, glory against home, dying young against getting old."},
     {k:"→ Ulysses", to:"ulysses", v:"Joyce maps every episode of this poem onto one Dublin day. The Cyclops becomes a bigot in a pub, the Sirens are barmaids, and Penelope gets the last word."},
     {k:"→ The Republic", to:"republic", v:"On the last page of Plato, the soul of Odysseus — offered any life at all — chooses the life of an ordinary private man, cured of ambition."},
@@ -1075,7 +1181,7 @@ const WORKS = {
   <p>Portable version: <b>the peace you live inside was bought by somebody who did not get justice.</b></p>`,
   wrong:[
     {b:"The Furies are not villains.", p:"They have the stronger legal case. Matricide is the oldest crime there is, and Apollo's rebuttal is nonsense he made up. They lose on a technicality, cast by a judge who has publicly said she sides with fathers."},
-    {b:"Clytemnestra is not a monster.", p:"He killed their child. She says so, repeatedly, and nobody in the play ever answers her. She is the greatest female role written before Shakespeare and Aeschylus lets her win every argument she is in."},
+    {b:"Clytemnestra is not a monster.", p:"He killed their child. She says so, repeatedly, and nobody in the play ever answers her. She is arguably the greatest female role written before Shakespeare, and Aeschylus lets her win every argument she is in."},
     {b:"The happy ending is a piece of current affairs.", p:"Four years before the play, Athens stripped the ancient Areopagus council of nearly all its powers in a bitter democratic reform, and the reformer was assassinated for it. Aeschylus is staging the founding of that exact court, in that exact city, in the middle of the fight. It is not a timeless myth. It is an intervention."},
     {b:"This is not the Electra story.", p:"Electra appears briefly in play two and vanishes. The obsessive, magnificent Electra is Sophocles' and Euripides' invention, later. And 'the Electra complex' is Jung's coinage, not Freud's."}
   ],
@@ -1191,15 +1297,85 @@ const WORKS = {
 
 ,
 
+"gilgamesh": {
+  file:"00.0", title:"The Epic of Gilgamesh", author:"Anonymous / Sîn-lēqi-unninni", date:"c. 2100–1200 BC",
+  form:"Background layer · Mesopotamian epic · clay tablets",
+  read:"Brief: 5 min",
+  spineLabel:"What happens",
+  oneline:"The oldest story we have that still reads as literature — a king who cannot accept that he will die, written down a thousand years before Homer and lost for two thousand years after.",
+  spine:`
+  <p class="lede">A poem in cuneiform on clay tablets, from Mesopotamia — modern Iraq — older than the Bible, older than Homer, and buried and forgotten until the 1850s.</p>
+  <p><b>Gilgamesh</b> is the king of <b>Uruk</b>, two-thirds god and one-third man, and a tyrant — he works his people to exhaustion and takes whatever he wants. The gods answer their complaints by making him an equal: <b>Enkidu</b>, a wild man raised among animals, who has to be civilised first (a woman, <b>Shamhat</b>, is sent to tame him). The two giants fight to a standstill, and then love each other on sight. They become inseparable.</p>
+  <p>Together they go looking for glory. They travel to the Cedar Forest and kill its monstrous guardian, <b>Humbaba</b>. They kill the <b>Bull of Heaven</b> after Gilgamesh publicly humiliates the goddess <b>Ishtar</b>. And for killing both, the gods decide one of them has to die — and they take Enkidu, slowly, in bed, of a wasting sickness.</p>
+  <p>The second half of the poem is grief. Gilgamesh, who has never feared anything, watches his friend rot — <em>'until a worm fell out of his nose'</em> — and is destroyed by the discovery that this is coming for him too. He abandons his city and walks to the edge of the world to find <b>Utnapishtim</b>, the one man the gods ever made immortal, to demand the secret.</p>
+  <p>He does not get it. Utnapishtim tells him immortality was a one-time gift, sets him a simple test — stay awake seven days — and Gilgamesh, exhausted, fails it instantly. He is given one consolation, a plant that restores youth, and a snake eats it while he bathes. He comes home with nothing. The poem ends where it began: with Gilgamesh looking at the walls of Uruk. The wall is the only thing he will leave. <b>That is the answer.</b></p>`,
+  why:`
+  <p class="lede">Because it is the beginning — and because it quietly demolishes the idea that the West's story starts with Homer.</p>
+  <p>Everything that later works spend three thousand years arguing about is already here, fully formed, at the very start: the fear of death, the love between two men that outweighs everything, the refusal to accept mortal limits, and the hard consolation that the only immortality available is the work you leave behind. <b>Achilles and Patroclus are Gilgamesh and Enkidu.</b> Odysseus refusing Calypso's offer of eternal life is answering a question Gilgamesh asked first.</p>
+  <p>And then there is the flood. On the eleventh tablet, Utnapishtim explains how he became immortal: the gods sent a <b>Great Flood</b> to wipe out humanity, warned him in secret, and told him to build a boat and fill it with his family and every kind of animal. When the waters fall he sends out a dove, then a swallow, then a raven, to find dry land. This was written down <em>centuries before Genesis</em>. When it was first translated in 1872, it made it very hard to keep reading Noah as history.</p>`,
+  sticky:[
+    {h:"It is older than everything, and nobody knew it existed.", p:"For roughly two thousand years, the oldest great poem in the world was completely lost — the language dead, the tablets buried under the ruins of Nineveh. It only came back when a self-taught British Museum engraver named George Smith deciphered it in the 1870s. Homer is the beginning of Western literature the way the second act is the beginning of a play you walked into late."},
+    {h:"The flood story is older than Noah's.", p:"Utnapishtim builds a boat, saves his family and the animals, rides out a divine flood, and sends out birds to find land — the whole architecture of the Noah story, written centuries earlier. When George Smith read it out in London in 1872, with the Prime Minister in the audience, it detonated. By his coworkers' account he was so overcome he ran round the room and <b>began tearing off his clothes.</b>"},
+    {h:"The two heroes are in love, and the poem is honest about it.", p:"Gilgamesh mourns Enkidu 'like a bride,' 'like a widow,' 'like a lioness robbed of her cubs.' Whether it is erotic or the deepest possible friendship has been argued for a century — but the intensity is not in question, and it is the engine of everything. The oldest story we have is about a man broken open by the death of the person he loved."},
+    {h:"The only immortality is the wall.", p:"Gilgamesh crosses the whole world to escape death and comes home with nothing — no plant, no secret, no eternity. And the last image of the poem is him showing a stranger the great walls of his city: <em>look what I built.</em> Four thousand years before anyone said 'this too shall pass,' the first epic already knew the answer to death was the thing you make and leave."},
+    {h:"An early, unbeatable version of 'eat, drink, and be merry.'", p:"In an older version, a tavern-keeper named Siduri stops the grief-maddened king and tells him the immortality search is pointless — so fill your belly, dance, wash, wear clean clothes, love the child who holds your hand and the wife in your arms. <em>That</em> is the life the gods allow. It is the oldest carpe diem on record, and it is kinder than most of the ones that came after."}
+  ],
+  idea:`
+  <p class="lede">You are going to die, you cannot fix that, and the search for a way out is itself the thing that wastes the life you have.</p>
+  <p>Gilgamesh does everything a hero can do — kills the monster, defies the gods, crosses the waters of death, reaches the one immortal man alive — and none of it works, because it cannot work. The poem is brutally clear-eyed: there is no secret, no plant, no reward. There is the city you build, the friend you loved, and the ordinary pleasures a tavern-keeper can list on one hand.</p>
+  <p>Portable version: <b>the oldest story in the world is about learning to accept death</b> — and it does not pretend the lesson is comforting.</p>`,
+  wrong:[
+    {b:"It is not a myth in the vague sense — it is a specific poem.", p:"People use 'Gilgamesh' to mean 'ancient Mesopotamian legend' in general. It is a particular literary work, with an author-editor (the ancient tradition names Sîn-lēqi-unninni), a structure, and an argument — closer to Homer than to a folk tale."},
+    {b:"The flood parallel does not mean the Bible 'copied' it.", p:"The honest claim is narrower and more interesting: both draw on a shared Mesopotamian flood tradition that Gilgamesh happens to record earlier. It does not prove plagiarism; it proves the story was already ancient when Genesis reached for it."},
+    {b:"It is not incomplete gibberish.", p:"Because it survives on broken tablets, people imagine a heap of fragments. In fact the main narrative is nearly whole and completely coherent — and reads, four thousand years on, like a novel about a mid-life crisis."},
+    {b:"Gilgamesh was probably real.", p:"A King Gilgamesh of Uruk appears on the Sumerian King List and was worshipped as a historical ancestor. Like Troy, the legend seems to have a real place and possibly a real man underneath it."}
+  ],
+  take:`<p>The most striking thing about the oldest story we have is how little the human problem has changed. Strip the gods and the cuneiform and Gilgamesh is a powerful man who is fine until someone he loves dies, and then cannot function, and throws everything away chasing a way out that does not exist, and finally comes home and goes back to work. Four thousand years of literature have refined the telling and added almost nothing to the diagnosis. We were already, at the very beginning, animals who know we will die and cannot stand it.</p>`,
+  counter:`<p>The 'look how modern they were' response is mostly a way of congratulating ourselves. The poem is also genuinely alien: its gods are capricious and physical, its morality is not ours, its hero is a rapist-tyrant we are nonetheless asked to grieve with, and its deepest consolations are civic and communal rather than personal. Reading it purely as an early self-help book about accepting mortality is a modern projection — and, notably, the same anti-heroic, cost-counting reading I default to everywhere. It fits here. It is still a lens I bring, not a fact I found.</p>`,
+  people:[
+    {k:"Gilgamesh", v:"King of Uruk, two-thirds god, one-third man. Begins as a tyrant, is transformed by love and then by grief, and ends as something rarer: a king who has accepted that he is mortal. The first fully drawn character in literature."},
+    {k:"Enkidu", v:"The wild man made by the gods to be Gilgamesh's equal and check — raised among animals, civilised by a week with the temple woman Shamhat, then bound to Gilgamesh in a friendship that outweighs the whole world. His death is the hinge of the poem.", to:"iliad"},
+    {k:"Shamhat", v:"The temple woman sent to tame Enkidu. Seven days with her, and the animals will no longer accept him — he has become human, which in this poem means: severed from nature, and mortal. Sexuality as the doorway out of the wild and into death."},
+    {k:"Utnapishtim", v:"The Mesopotamian Noah — the one man the gods ever granted eternal life, for surviving the Great Flood. Gilgamesh crosses the world to wring the secret out of him and learns there is none: immortality was a single unrepeatable gift.", to:"bible"},
+    {k:"Ishtar", v:"Goddess of love and war (later echoed in Aphrodite and Venus). Gilgamesh refuses her advances and lists, to her face, how she destroyed every previous lover. In revenge she looses the Bull of Heaven — and the killing of it costs Enkidu his life."},
+    {k:"Humbaba", v:"The monstrous guardian of the Cedar Forest, set there by the gods. Gilgamesh and Enkidu kill him for glory — and it is one of the two killings the gods avenge. He begs for his life first; they do it anyway."},
+    {k:"Siduri", v:"The tavern-keeper at the edge of the world who tells the grieving king the truth: the search is hopeless, so eat, drink, dance, and love the people in front of you. The oldest 'seize the day' speech in existence, spoken by a bartender."},
+    {k:"Ninsun", v:"Gilgamesh's mother, a goddess — wise and clear-eyed, she interprets his dreams and adopts Enkidu as her son. One of the few figures who understands what is coming."},
+    {k:"George Smith", v:"The working-class British Museum engraver, largely self-taught, who deciphered the flood tablet in 1872 and brought the whole epic back after two thousand years. Read it out to a stunned London society — Prime Minister Gladstone in the room — and, by his colleagues' account, was so overcome he started removing his clothes. Dead at 36, in the field, chasing more tablets."}
+  ],
+  places:[
+    {k:"Uruk", v:"Gilgamesh's city, one of the first true cities on earth, in Sumer — southern Iraq. Its great walls open and close the poem, and are its final answer to death: the one immortality a man can actually have is the thing he builds and leaves."},
+    {k:"The Cedar Forest", v:"The sacred wilderness, guarded by Humbaba, that Gilgamesh and Enkidu invade for fame and timber. Killing its guardian is the first of the two crimes the gods punish — an early note of conquest and its cost."},
+    {k:"The waters of death", v:"The sea at the edge of the world that Gilgamesh must cross to reach Utnapishtim — ferried across by the boatman Urshanabi. The journey no living person is meant to make."},
+    {k:"Nineveh", v:"Not in the poem, but where it survived: the ruined library of the Assyrian king Ashurbanipal, whose buried tablets — dug up in the 1850s — preserved the fullest text. The poem outlived its whole civilisation as rubble in a hill."}
+  ],
+  terms:[
+    {k:"cuneiform", v:"The wedge-shaped script, pressed into wet clay with a reed, that Mesopotamia wrote in for three thousand years. The reason the poem survived: clay tablets, unlike papyrus or paper, are baked hard and effectively permanent when a city burns."},
+    {k:"the Standard Babylonian version", v:"The fullest text, twelve tablets, edited into its final form around 1200 BC and traditionally credited to the scribe Sîn-lēqi-unninni — one of the earliest named authors in history, if the tradition is right."},
+    {k:"the Flood tablet", v:"Tablet XI, on which Utnapishtim tells the flood story — the most famous piece of cuneiform in the world, because it is Noah's ark, older than Noah."}
+  ],
+  context:`
+  <p class="lede">Written across a thousand years, buried for two, and read again only in the last century and a half.</p>
+  <p>The oldest pieces are Sumerian poems from around 2100 BC; the unified Akkadian epic came together around 1800 BC; the standard twelve-tablet version was fixed around 1200 BC. Then the civilisations that told it fell, the languages died, and the story vanished so completely that no one knew it had ever existed.</p>
+  <p>It came back by accident. Austen Henry Layard and Hormuzd Rassam dug the tablets out of the mound of Nineveh in the 1850s; George Smith deciphered the flood passage in 1872. What we read today is still being reassembled — new fragments turn up in museum drawers and on the antiquities market, and the poem gets a little more complete every few decades. It is the only work here that is <b>still growing.</b></p>`,
+  echoes:[
+    {k:"→ The Bible", to:"bible", v:"The flood, the ark, the saved family, the birds sent out over the water — all of it here first, centuries before Genesis. Not copied, but drawn from the same ancient Mesopotamian source the Bible later reached for."},
+    {k:"→ The Iliad", to:"iliad", v:"Achilles and Patroclus are Gilgamesh and Enkidu: the mightiest warrior alive, undone not by an enemy but by grief for the man he loved, raging against a death he cannot fight."},
+    {k:"→ The Odyssey", to:"odyssey", v:"Gilgamesh seeks immortality and fails; Odysseus is offered it by Calypso and refuses. Two answers to the same question, 1,500 years apart — and the later hero has quietly decided a mortal life at home is the better one."},
+    {k:"→ Ecclesiastes &amp; every carpe diem", v:"Siduri's speech — eat, drink, love the people in front of you, for the search is hopeless — is the template for three thousand years of 'seize the day,' from Ecclesiastes to Horace to the present."}
+  ]
+}
+,
+
 "bible": {
-  file:"00.1", title:"The Bible", author:"Many hands", date:"c. 900 BC – 100 AD",
+  file:"00.1", title:"The Bible", author:"Many hands", date:"c. 900 BC–AD 100",
   form:"Background layer",
   read:"Brief: 6 min",
   spineLabel:"What you actually need",
   oneline:"Augustine, Dante, Milton, Goethe, Melville and Dostoevsky are all extensions of about fifty verses of this. Without it you are reading fan fiction about a story you have never met.",
   spine:`
-  <p class="lede">This file exists because three of your seventeen works are not <em>enriched</em> by the Bible — they are <b>unreadable</b> without it. Milton writes ten thousand lines expanding roughly forty verses of Genesis. Augustine's entire psychology is one sentence of Paul. Dante's Hell is sorted by a scheme that assumes you already know what sin is.</p>
-  <p><b>The shape.</b> A world is made and pronounced good. Two people are put in a garden with one prohibition, and they break it, and everything after that is the consequence — work, pain, death, and a permanent sense that something is wrong that wasn't always wrong. That is the <b>Fall</b>, and it is the single most load-bearing idea in Western literature.</p>
+  <p class="lede">This file exists because several of the works here are not <em>enriched</em> by the Bible — they are <b>unreadable</b> without it. The clearest cases: Milton writes ten thousand lines expanding roughly forty verses of Genesis. Augustine's entire psychology is one sentence of Paul. Dante's Hell is sorted by a scheme that assumes you already know what sin is.</p>
+  <p><b>The shape.</b> A world is made and pronounced good. Two people are put in a garden with one prohibition, and they break it, and everything after that is the consequence — work, pain, death, and a permanent sense that something is wrong that wasn't always wrong. That is the <b>Fall</b>, and it is the most load-bearing idea in Western literature.</p>
   <p>Then a family. God makes a deal — a <em class="g">covenant</em> — with Abraham, and then tests him by ordering him to cut his son's throat on a mountain. Abraham gets up early to do it. Then slavery in Egypt, and Moses, and a voice from a burning bush that gives its name as <b>I AM</b>, and a sea that opens, and a law delivered on a mountain in fire. Forty years in a desert, and Moses dies within sight of the land he was promised and never enters it.</p>
   <p>Then kings, and failure, and prophets shouting that the ritual is worthless without justice. Then exile in Babylon, and the great question that follows catastrophe: <em>why do the innocent suffer?</em> — which the Book of <b>Job</b> asks, and God <b>refuses to answer</b>.</p>
   <p><b>Then the reversal.</b> A god becomes a poor man in an occupied province, says that the meek inherit the earth and the last shall be first, is betrayed by a friend, executed as a criminal between two thieves, cries out that he has been abandoned — and, the claim goes, comes back.</p>
@@ -1208,11 +1384,11 @@ const WORKS = {
   <p class="lede">These works run on two incompatible operating systems, and this is the second one.</p>
   <p>The Greek picture, which you've now read: excellence, glory, honour, the visible world, the beautiful and the strong, and a death you cannot escape or survive. Achilles buys immortal fame with his life because there is nothing else on offer.</p>
   <p>The Hebrew and Christian picture inverts nearly every term. The <b>weak</b> are favoured. The <b>slave</b> is the protagonist. God is invisible and cannot be depicted. The interior — what you <em>want</em>, in secret — matters more than what you achieve. And the central figure of the entire structure is a tortured provincial criminal, which is roughly the least heroic thing a Greek could imagine.</p>
-  <p><b>Almost everything after Augustine is a negotiation between these two.</b> Augustine is a Platonist who converted. Dante is Aristotle plus Christ. Milton is Virgil plus Genesis. Dostoevsky is Job. Melville is Job with a harpoon. Once you can see the seam, you can see it everywhere — and that seam is the single most useful thing in this entire app.</p>`,
+  <p><b>Almost everything after Augustine is a negotiation between these two.</b> Augustine is a Platonist who converted. Dante is Aristotle plus Christ. Milton is Virgil plus Genesis. Dostoevsky is Job. Melville is Job with a harpoon. Once you can see the seam, you can see it everywhere — and that seam is the most useful thing in this entire app.</p>`,
   sticky:[
     {h:"There is no apple, and there is no Satan.", p:"Genesis says a serpent — 'more crafty than any beast of the field.' It does not name the fruit, and it does not say the serpent is the devil. The apple is a Latin pun (<em>malum</em> = both 'evil' and 'apple'). The identification with Satan comes centuries later. The most famous story in the West is mostly things that were added."},
     {h:"Satan is a job title.", p:"In Job, <em>ha-satan</em> means 'the accuser' — a prosecutor in God's court, on the payroll, doing his job with permission. He is not a rebel and he is not in Hell. The magnificent fallen Lucifer of the Western imagination is assembled later, out of scraps, and gets his final and definitive form from <b>Milton</b>, who did not retell Satan's story so much as invent it."},
-    {h:"God takes a bet, and Job loses everything.", p:"The wager is the setup: Job is destroyed to settle an argument. He demands an explanation. God finally arrives in a whirlwind — and asks Job a hundred questions about stars and hippos and where he was when the world was made, and <b>never answers the one Job asked.</b> That refusal is the most honest thing in religious literature. It is also the open wound in <em>Moby-Dick</em> and <em>The Brothers Karamazov</em>."},
+    {h:"God takes a bet, and Job loses everything.", p:"The wager is the setup: Job is destroyed to settle an argument. He demands an explanation. God finally arrives in a whirlwind — and asks Job a hundred questions about stars and hippos and where he was when the world was made, and <b>never answers the one Job asked.</b> That refusal is the most unflinching thing in religious literature. It is also the open wound in <em>Moby-Dick</em> and <em>The Brothers Karamazov</em>."},
     {h:"Abraham gets up early to kill his son.", p:"He is told to butcher Isaac on a mountain, and he does not argue, and he does not delay. He saddles the donkey at dawn. Isaac carries the wood for his own fire and asks where the lamb is. Nothing is ever explained — and note that Agamemnon does exactly this to Iphigenia, and there, no one stops him."},
     {h:"'The good I want to do, I don't do.'", p:"Paul, writing to Rome. One sentence, and the divided self begins: the person who watches himself fail, wanting two things at once. Augustine expands it into 300 pages. Dostoevsky expands it into a religion. Every confessional narrative you have ever encountered is downstream of that verse."}
   ],
@@ -1221,7 +1397,7 @@ const WORKS = {
   <p>Greek: <b>be excellent</b>, be seen to be excellent, and die. Hebrew/Christian: <b>be forgiven</b> — which requires there to be something wrong with you that effort cannot fix.</p>
   <p>That second premise is what Aristotle does not have and cannot accommodate. Aristotle says: character is built by repetition, so practise. Augustine says: <b>the machine is broken and practice will not repair it.</b> That argument — <em>can you fix yourself, or do you need to be rescued?</em> — runs directly through Aristotle, Augustine, Dante, Milton, Goethe, Melville and Dostoevsky — and not one of them declines to take a side.</p>`,
   wrong:[
-    {b:"It isn't a book.", p:"It's a library — 66 to 81 books depending on whose canon, written over a millennium, in three languages, by many hands, in genres that don't agree with each other: law, chronicle, erotic poetry, philosophy, apocalypse, letters. Treating it as one author with one view is the single most common error."},
+    {b:"It isn't a book.", p:"It's a library — 66 to 81 books depending on whose canon, written over a millennium, in three languages, by many hands, in genres that don't agree with each other: law, chronicle, erotic poetry, philosophy, apocalypse, letters. Treating it as one author with one view is the commonest misreading."},
     {b:"The seven deadly sins are not in it.", p:"Nor is Lucifer-as-Satan's-name (that comes from a taunt aimed at a Babylonian king), nor Purgatory, nor the fall of the rebel angels as a narrative. Nearly all the furniture of 'Christian imagination' is later architecture — much of it Dante's and Milton's."},
     {b:"'Money is the root of all evil' is a misquote.", p:"The <em>love</em> of money. And 'immaculate conception' does not mean the virgin birth — it's a nineteenth-century doctrine about Mary's own conception. Both mistakes will identify you instantly."},
     {b:"The majestic English is a translation effect.", p:"The King James Version (1611) was deliberately archaic even when it was printed. The sonorous grandeur everyone thinks of as biblical is Jacobean English — and it is the version Milton, Melville, Lincoln, and every writer in English has in their ear. The literary event is the <em>translation</em>."}
@@ -1254,9 +1430,9 @@ const WORKS = {
   terms:[
     {k:"covenant", v:"A contract between God and a people. 'Testament' means the same thing — Old and New Covenant."},
     {k:"the Fall", v:"The event that explains why the world is not as it should be. Everything downstream needs it: without a Fall, Dante has nothing to punish and Milton has nothing to justify."},
-    {k:"original sin", v:"The claim that the defect is inherited, structural, and prior to any choice you made. Largely <b>Augustine's</b> construction — and the single most consequential idea he ever had."},
+    {k:"original sin", v:"The claim that the defect is inherited, structural, and prior to any choice you made. Largely <b>Augustine's</b> construction — and the most consequential idea he ever had."},
     {ref:"grace", here:"The direct contradiction of Aristotle: not self-built virtue but unearned rescue. Augustine's whole conversion turns on receiving it rather than achieving it."},
-    {k:"Logos", v:"'In the beginning was the Word.' John opens by welding Genesis to Greek philosophy in a single line, and the whole later fusion of Athens and Jerusalem is prefigured in it."},
+    {k:"Logos (the Word)", v:"'In the beginning was the Word.' John opens by welding Genesis to Greek philosophy in a single line, and the whole later fusion of Athens and Jerusalem is prefigured in it."},
     {k:"the Vulgate", v:"Jerome's Latin Bible, c. 405. <em>This</em> is the Bible Dante read and Augustine preached. Not Hebrew, not Greek, not English."},
     {k:"apocalypse", v:"Means 'unveiling,' not 'catastrophe.' The catastrophe is what happens to be under the veil."}
   ],
@@ -1264,6 +1440,7 @@ const WORKS = {
   <p class="lede">Assembled, not written. Argued over, edited, translated, and canonised across more than a thousand years.</p>
   <p>The crucial fact is which <em>version</em> each author was hearing. Augustine and Dante had the Latin Vulgate. Milton had Hebrew, Greek, Latin, and the King James. Dostoevsky had Church Slavonic and Russian. Melville had the King James, and you can hear it in every sentence he writes — 'Call me Ishmael' is a name lifted from Genesis, and it means <b>the outcast son</b>, and Melville expects you to know that before the second sentence.</p>`,
   echoes:[
+    {k:"→ The Epic of Gilgamesh", to:"gilgamesh", v:"The flood, the ark, the saved family, and the birds sent out over the water — all there centuries before Genesis. The Bible reaching for a story that was already ancient."},
     {k:"→ Confessions", to:"confessions", v:"Paul's divided will, expanded into the first autobiography."},
     {k:"→ Dante", to:"dante", v:"The frame, the furniture, and the destination — with Aristotle's ethics doing the filing."},
     {k:"→ Paradise Lost", to:"paradise-lost", v:"Genesis, chapters 1–3, at ten thousand lines. And the invention of the Satan everyone thinks they already knew."},
@@ -1274,7 +1451,7 @@ const WORKS = {
 },
 
 "confessions": {
-  file:"07", title:"Confessions", author:"Augustine", date:"c. 400 AD",
+  file:"07", title:"Confessions", author:"Augustine", date:"c. AD 400",
   form:"Autobiography · thirteen books · addressed to God",
   read:"Brief: 5 min",
   spineLabel:"What happens",
@@ -1295,7 +1472,7 @@ const WORKS = {
   sticky:[
     {h:"He stole pears he didn't even want.", p:"Sixteen, with friends, he robs a neighbour's pear tree — not from hunger, and not because the pears were good. They weren't. He threw them to the pigs. He devotes pages to it, obsessively, because it is the only crime he can find in his life with <b>no motive whatsoever</b> — and a sin with no motive is proof that the will is bent in itself. Every modern account of doing wrong for its own sake starts in that orchard."},
     {h:"'Grant me chastity and continence — but not yet.'", p:"He prayed it. Sincerely. And he tells you he knew, while he was praying it, exactly what he was doing. It is the funniest and most human sentence in Christian literature, and it is fifteen centuries old."},
-    {h:"He sent her away, and never tells us her name.", p:"Thirteen years. The mother of his son. Dismissed so he could make a respectable marriage. He writes that his heart was torn and bleeding — and then, in the next breath, that he immediately found another woman, because he could not wait. She goes back to Africa vowing never to know another man, and leaves the book. It is the greatest silence in literature, and he almost certainly did not intend it as one."},
+    {h:"He sent her away, and never tells us her name.", p:"Thirteen years. The mother of his son. Dismissed so he could make a respectable marriage. He writes that his heart was torn and bleeding — and then, in the next breath, that he immediately found another woman, because he could not wait. She goes back to Africa vowing never to know another man, and leaves the book. It is arguably the greatest silence in literature, and he almost certainly did not intend it as one."},
     {h:"Take up and read.", p:"A child's voice in the next garden, singing a phrase he doesn't recognise from any game he knows. He runs to the book and opens it at random and reads a single verse of Paul, and the man he had been for thirty-two years stops."},
     {h:"'What, then, is time? If nobody asks me, I know. If I have to explain it, I don't.'", p:"Book XI. And then he proves that time exists only in the mind: the past is memory, the future is expectation, the present is attention — and there is nothing else. Philosophers have been arguing with him about it for sixteen hundred years, and they have not won."}
   ],
@@ -1340,6 +1517,9 @@ const WORKS = {
   <p>Rome was sacked in 410 — the unthinkable happening to people who had thought it unthinkable — and Augustine wrote <em>The City of God</em> in response. He died in 430 while the Vandals besieged his own city. The <em>Confessions</em> comes just before all of that: the private book, written around 400, by a man who had no idea he was standing at the hinge.</p>
   <p>He is the bridge. Plato goes into him, and Christianity comes out.</p>`,
   echoes:[
+    {k:"→ The Symposium", to:"symposium", v:"Augustine and Monica at Ostia, rising 'step by step' past all created things toward God, is Diotima's ladder in Christian dress — longing for the eternal, climbing past the world that only points to it."},
+    {k:"→ Meditations", to:"meditations", v:"The other answer to the rescue question. Marcus: reason is enough, fix your own judgments. Augustine: the will is broken and only grace can mend it. Stoic self-sufficiency against Christian surrender."},
+    {k:"→ Montaigne", to:"montaigne", v:"Montaigne inherits Augustine's inward gaze and removes the altar — self-examination with no God as audience and no salvation at the end. The secular sequel to the Confessions."},
     {k:"→ The Republic", to:"republic", v:"He is a Platonist who found a church. The Forms become thoughts in the mind of God; the Cave becomes the world; the Good becomes God. The Republic is his intellectual furniture."},
     {k:"→ Nicomachean Ethics", to:"nicomachean-ethics", v:"The great argument of the whole shelf. Aristotle: practise, and you will become good. Augustine: I practised, and the will is the broken part."},
     {k:"→ The Aeneid", to:"aeneid", v:"He wept over Dido as a boy and never forgave himself. The most quoted self-accusation in the book is about crying at a poem."},
@@ -1386,7 +1566,7 @@ const WORKS = {
     {b:"It is not mainly about the afterlife.", p:"It is about <b>Florence.</b> A large fraction of Hell is local politics, settled scores, and men Dante knew personally. He is writing from exile, broke, with a death sentence, and it shows on every page."}
   ],
   take:`<p>The reason the <em>Inferno</em> eclipses the other two thirds isn't that it's better. It's that damage is easier to picture than joy, and Dante says so himself, apologising over and over that language cannot hold what he saw. But the poem's actual subject is <b>Purgatory</b> — the only one of the three worlds where time exists, where effort changes anything, where people are still becoming something. Hell is a museum of finished people. Purgatory is where the living actually are, and it is the part nobody reads.</p>`,
-  counter:`<p>That is a very comfortable modern conclusion — <em>the striving is the point</em> — and it is not what he wrote. Dante did not spend fourteen years and fourteen thousand lines in exile to arrive at self-improvement. The entire apparatus is aimed at the <b>Paradiso</b>, at something he insists actually happened to him and repeatedly says he cannot describe. Routing around the destination because you find it less vivid than the pit is reading a pilgrimage as a walking tour. His claim is not that the journey is the meaning. It is that there is somewhere to <em>arrive</em> — and that when you get there, it has a human face.</p>`,
+  counter:`<p>The trouble is that this is not the poem he wrote. Dante did not spend fourteen years and fourteen thousand lines in exile to arrive at self-improvement. The entire apparatus is aimed at the <b>Paradiso</b>, at something he insists actually happened to him and repeatedly says he cannot describe. Routing around the destination because you find it less vivid than the pit is reading a pilgrimage as a walking tour. His claim is not that the journey is the meaning. It is that there is somewhere to <em>arrive</em> — and that when you get there, it has a human face.</p>`,
   people:[
     {k:"Dante", v:"Florentine, exiled in 1302 on fabricated corruption charges, sentenced to be burned alive if he returned. He never returned. He wrote the poem on other men's floors."},
     {k:"Virgil", v:"The author of the <em>Aeneid</em>, walking and talking. Guide, teacher, protector — and damned. He must be left behind, and the moment Dante turns to speak to him and finds him gone is one of the great losses in literature."},
@@ -1418,14 +1598,148 @@ const WORKS = {
   <p>He wrote about how salty another man's bread tastes, and how hard it is to climb another man's stairs. He was offered a way home once, on humiliating terms — a public penance — and refused it, and stayed out, and died out. And in that condition he built the most complete and confident architecture in European literature, a universe in perfect order, with a place for every soul and a reason for every place.</p>
   <p>A man whose own city had thrown him into chaos wrote the most orderly poem ever made. It is worth sitting with that for a second.</p>`,
   echoes:[
+    {k:"→ The Symposium", to:"symposium", v:"Diotima's ladder of love, made Christian and given a face: Dante's love for Beatrice becomes the force that lifts him through Paradise to God — the erotic ascent of the Symposium with a name on the bottom rung."},
     {k:"→ The Aeneid", to:"aeneid", v:"Virgil is not an influence here. He is a <em>character</em>, and Aeneid VI is the blueprint for the descent."},
     {k:"→ Nicomachean Ethics", to:"nicomachean-ethics", v:"Inferno XI stops the poem to explain that Hell is organised according to Aristotle. The architecture of damnation is a reading list."},
     {k:"→ Confessions", to:"confessions", v:"The confessional first person, the tears, the woman who is the way up, the interior journey as the real one."},
     {k:"→ The Odyssey", to:"odyssey", v:"Dante had never read Homer, and invented a Ulysses who refuses to stay home and drowns for it. Tennyson took <em>that</em> Ulysses, not Homer's."},
-    {k:"→ Paradise Lost", to:"paradise-lost", v:"Milton's Satan is the answer to this one. Dante's is frozen, mute, and pathetic. Milton gives him the best lines in the poem — and the argument between those two Satans is the whole argument about evil."}
+    {k:"→ Paradise Lost", to:"paradise-lost", v:"Milton's Satan is the answer to this one. Dante's is frozen, mute, and pathetic. Milton gives him a voice — and the argument between those two Satans is the whole argument about evil."}
   ]
 }
 
+,
+
+"meditations": {
+  file:"04.5", title:"Meditations", author:"Marcus Aurelius", date:"c. AD 170–180",
+  form:"Philosophy · Stoic notebook · twelve books",
+  read:"Brief: 5 min",
+  spineLabel:"What it is",
+  oneline:"The private journal of a Roman emperor, written in a war tent and never meant for anyone's eyes — the most powerful man alive reminding himself, night after night, that almost nothing is under his control.",
+  spine:`
+  <p class="lede">Not a book. A notebook — the private, unpublished diary of <b>Marcus Aurelius</b>, emperor of Rome, written in Greek, to himself, in army camps on the frozen Danube frontier, while fighting a war and a plague at once.</p>
+  <p>He never titled it, never shared it, never prepared it for anyone. The Greek name we give it, <em>Ta eis heauton</em>, just means <b>'to himself.'</b> It survived by pure accident. What it records is the most powerful person on earth, at the end of long days of war and administration, talking himself back into sanity using one idea.</p>
+  <p>The idea, inherited from the ex-slave philosopher <b>Epictetus</b>, is a hard line drawn straight through the middle of your life: <b>some things are up to you, and some are not.</b> Up to you: your judgments, your choices, what you decide things mean. Not up to you: your body, your reputation, your standing, other people, the past, the future, whether you live to morning. Peace comes from wanting only the first kind and releasing your grip, completely, on the second.</p>
+  <p>So he writes himself reminders. That the man who wronged you was only doing what he thought was good. That fame is noise you won't hear once you're dead. That you could leave life right now. That the obstacle is the way. That the whole cosmos is one thing, and you are a small rational part of it doing its small part. Over and over, for twelve books, the emperor tells himself to <b>stop wanting the world to be other than it is.</b></p>`,
+  why:`
+  <p class="lede">Because it is the third answer to the question this whole shelf keeps asking — <em>can you fix yourself, or must you be rescued?</em> — and it is neither.</p>
+  <p>Aristotle says you build a good character slowly, by practice, over a lifetime, with some luck and good circumstances required. Augustine says you can't — the will is broken, and only God's grace can mend it. The Stoic says: <b>you are asking the wrong question.</b> You do not need to be built or rescued, because the only thing that was ever truly yours — your own judgment — is already entirely in your power, right now, this second. You are not broken. You are just gripping the wrong things.</p>
+  <p>And there is the fact that makes it unique in this collection. Plato spent the <em>Republic</em> dreaming of a <b>philosopher-king</b> — the impossible ruler who is wise and does not want power. Marcus Aurelius is the one time in recorded history it actually happened: a genuine philosopher who was handed absolute power over seventy million people. The <em>Meditations</em> is the record of what that was like from the inside — and it is mostly exhaustion, duty, and the daily effort not to become a monster. The dream came true exactly once, and this is the diary.</p>`,
+  sticky:[
+    {h:"The most powerful man alive spent his nights reminding himself he controlled almost nothing.", p:"There is no stranger book. An emperor who could have anything writes, again and again, that he can keep nothing — not his body, not his throne, not tomorrow, not the good opinion of a single soul. The only thing he owns is what he does with his own mind. It is the opposite of what power is supposed to feel like, written by the man with the most of it."},
+    {h:"'You have power over your mind — not outside events.'", p:"The most quoted line, and the whole system in one sentence. Everything that hurts you, the Stoic claims, is not the event but your <em>judgment</em> about the event — and the judgment is the one thing you can change. Twenty centuries later this became the core mechanism of cognitive behavioural therapy, more or less unaltered."},
+    {h:"Book One is a thank-you list.", p:"The diary opens with the emperor cataloguing what he learned from each person who shaped him — his mother, his teachers, his adoptive father — naming the specific virtue each one gave him. Before any philosophy, gratitude, itemised. It is quietly one of the most moving things in ancient literature."},
+    {h:"He wrote it, and then his son wrecked everything.", p:"The philosopher-emperor's heir was <b>Commodus</b> — vain, cruel, and incompetent, the villain of <em>Gladiator</em>, and the end of the golden age of Rome. The one man who actually was Plato's philosopher-king handed the empire to exactly the kind of ruler the whole tradition warns against. The <em>Meditations</em> is serene; history's punchline is not."},
+    {h:"It is 1,900 years old and reads like it was written this morning.", p:"Strip the Roman names and the Meditations is indistinguishable from a modern self-help journal — because it is the source most modern self-help is quietly drawing from. Stoicism is, right now, the most alive dead philosophy in the world, and this thin notebook is why."}
+  ],
+  idea:`
+  <p class="lede">Draw one line through everything: what is up to you, and what is not. Then invest your whole self in the first and let go, entirely, of the second.</p>
+  <p>Almost all suffering, the Stoic claims, comes from wanting to control things that were never yours — other people, outcomes, reputation, the length of your life — and neglecting the one thing that is: the quality of your own judgment and choice. Fix that boundary in the right place and you become, in the Stoic word, <em>free</em> — not because your circumstances improve, but because you have stopped staking your peace on them.</p>
+  <p>Portable version: <b>you don't control what happens; you control what you make it mean</b> — and that, and only that, is where a good life is built.</p>`,
+  wrong:[
+    {b:"Stoicism is not being emotionless.", p:"The modern word 'stoic' — cold, unfeeling — is almost a slander. The goal is not to kill emotion but to stop being jerked around by false judgments, so that what remains is steadiness, not numbness. Marcus feels grief, exhaustion, and disgust all over the book; he just refuses to be governed by them."},
+    {b:"It is not passive resignation.", p:"'Accept what you can't control' is only half of it. The other half is a fierce insistence on doing your duty — acting justly, working hard, showing up — precisely <em>because</em> the action is up to you even when the outcome isn't. Marcus wrote it while personally leading a war, not while withdrawing from one."},
+    {b:"It was not written to teach you.", p:"These are not lessons for a reader; there was no reader. They are one man's repeated attempts to make himself believe things he already knew but kept failing to live by. The repetition that can feel tedious is the whole point: this is a person practising, not a teacher explaining."},
+    {b:"The emperor was not a plaster saint.", p:"He persecuted Christians, kept the machinery of slavery and conquest running, and chose a catastrophic heir. The serenity on the page coexists with an ordinary Roman ruler's cruelties. Reading him as a flawless sage is its own kind of mistake."}
+  ],
+  take:`<p>What makes the Meditations almost unbearably poignant is the gap between the power and the plea. Here is a man who could order anything in the world, writing to himself in the dark, over and over, the way you would coach a frightened friend — be patient, they don't know better, it won't last, you'll be dead soon too, do the right thing anyway. All the power in the world, and the only battle that mattered to him was the one inside his own skull, which he had to fight again every single night. The most powerful person in this entire collection turns out to have wanted exactly what the least powerful wants: to not be ruled by his own mind.</p>`,
+  counter:`<p>The seductive reading — Stoic serenity as timeless wisdom for busy moderns — is also how Stoicism gets defanged. Critics have always noted its convenient politics: a philosophy that tells you your circumstances don't matter, only your attitude to them, is a very comfortable creed for an emperor and a potentially paralysing one for the enslaved and the oppressed, who might reasonably want to change their circumstances rather than accept them. 'It's not the event, it's your judgment' can shade into 'stop complaining.' Marcus's inner freedom was underwritten by other people's very external chains. The book is wise; it is also, unavoidably, the wisdom of a man on top.</p>`,
+  people:[
+    {k:"Marcus Aurelius", v:"Roman emperor from AD 161 to 180, last of the 'Five Good Emperors,' and the only one who was also a serious philosopher. Reluctant, dutiful, and perpetually at war on the frontier — the <em>Meditations</em> is the private voice behind the public statue."},
+    {k:"Epictetus", v:"The former slave whose Stoic teaching is the engine of the whole book. Marcus never met him — he read the lecture notes — but the core move, dividing the world into what is and isn't 'up to us,' is Epictetus's, taken straight into the emperor's diary."},
+    {ref:"socrates", here:"The distant model behind all of it — the philosopher who feared nothing, questioned everything, and met his own death with calm. Stoicism took Socratic self-mastery and built a system on it."},
+    {k:"Commodus", v:"Marcus's son and heir — vain, brutal, and incompetent, later the villain of <em>Gladiator</em>. The philosopher-king's single worst decision, and the hinge on which Rome's golden age turned to decline. Proof that wisdom does not inherit."},
+    {k:"Zeno of Citium", v:"The founder of Stoicism, around 300 BC, who supposedly turned to philosophy after a shipwreck cost him everything — and taught in a painted colonnade, the <em>Stoa</em>, that gave the school its name. Marcus is the last great voice of the tradition Zeno began."}
+  ],
+  places:[
+    {k:"The Danube frontier", v:"The war zone where most of the book was written — army camps at Carnuntum and among the Quadi, on the frozen edge of the empire, during the long Marcomannic Wars. The serenity on the page was composed in mud, cold, and plague."},
+    {k:"Rome (the empire)", v:"The empire Marcus governed from a distance and mostly from the saddle — seventy million people, an army, a treasury, a plague. The <em>Meditations</em> is what its ruler told himself to stay sane under the weight of it."},
+    {k:"The Stoa", v:"Not a place in the book, but the one it comes from: the 'painted porch' in Athens where Zeno first taught. Stoicism is named after a covered walkway — the philosophy of the colonnade."}
+  ],
+  terms:[
+    {k:"the dichotomy of control", v:"The heart of Stoic practice: sorting everything into 'up to us' (our judgments, choices, will) and 'not up to us' (everything else), and investing only in the first. Get the line in the right place and you are free; put it in the wrong place and you suffer."},
+    {k:"logos (Stoic)", v:"The rational order the Stoics believed runs through the whole cosmos — reason as the structure of reality itself. To live well is to live 'according to nature,' meaning in agreement with that order rather than fighting it.", to:"bible"},
+    {k:"amor fati", v:"'Love of fate' — not merely accepting what happens but embracing it, willing it, treating each event as necessary and right. Nietzsche later took the phrase and made it his own, but the posture is pure Stoic."},
+    {k:"memento mori", v:"'Remember you will die.' For the Stoic, not morbid but clarifying: constant awareness of death strips away vanity and fear and forces attention onto what actually matters, now, while there is time."},
+    {k:"apatheia", v:"Not apathy — freedom from being <em>controlled</em> by the passions. The Stoic sage still feels, but is no longer dragged around by false judgments about good and bad. Steadiness, not coldness."}
+  ],
+  context:`
+  <p class="lede">Written on campaign at the end of the Roman golden age, lost, and recovered by luck.</p>
+  <p>Marcus Aurelius (AD 121–180) inherited a Stoic training and an empire, and spent the last decade of his life defending the Danube frontier against Germanic tribes while a plague — the Antonine Plague — killed millions. The <em>Meditations</em> was composed in those years, in Greek, as private notes to steady himself. He died on campaign in 180, and his death is conventionally marked as the end of the <em>Pax Romana</em>.</p>
+  <p>The notebook was never published in his lifetime and could easily have vanished entirely. It survived through a thin chain of manuscripts to its first printed edition in 1559 — after which it slowly became one of the most beloved books in the world. Its current status is strange and telling: a private Roman diary is, right now, one of the best-selling works of philosophy on earth, because Stoicism has become the working creed of a great many people who have never heard of Epictetus.</p>`,
+  echoes:[
+    {k:"→ Nicomachean Ethics", to:"nicomachean-ethics", v:"The rival account of the good life. Aristotle says virtue needs practice, time, and some external luck — health, friends, fortune. The Stoic says no: virtue alone is enough, it is fully in your power, and you can have it on the rack. Two ancient answers, directly opposed."},
+    {k:"→ Confessions", to:"confessions", v:"The rescue question, head on. Marcus: you have everything you need already — reason is enough, fix your judgments yourself. Augustine, two centuries later: no, the will is broken and only grace can save it. Self-sufficiency versus surrender."},
+    {k:"→ The Republic", to:"republic", v:"Plato imagined the philosopher-king and thought it nearly impossible. Marcus Aurelius <em>was</em> one — the dream made real exactly once — and the Meditations is the unglamorous view from inside the fantasy: duty, exhaustion, and the daily effort not to be corrupted by power."},
+    {k:"→ The Epic of Gilgamesh", to:"gilgamesh", v:"The oldest answer meets a later one. Siduri tells Gilgamesh to stop chasing immortality and love the life he has; Marcus, memento mori in hand, says the same — accept that you will die, and it frees you to live now."}
+  ]
+}
+,
+
+"montaigne": {
+  file:"09.5", title:"The Essays", author:"Michel de Montaigne", date:"1580–1588",
+  form:"Essays · three books · 107 attempts",
+  read:"Brief: 5 min",
+  spineLabel:"What it is",
+  oneline:"A French nobleman retires to a tower at 38 and, by writing about himself with total honesty, accidentally invents a whole form of writing — the essay — and the modern secular self along with it.",
+  spine:`
+  <p class="lede">Not a treatise, not a memoir, not a confession to God. Something genuinely new: a man sitting in a room, watching his own mind work, and writing down what he finds — including that most of it is contradictory, changeable, and unsure.</p>
+  <p>In 1571, at <b>thirty-eight</b>, Michel de Montaigne quit public life and shut himself in the tower of his château near Bordeaux, its library of a thousand books, its beams carved with Greek and Latin maxims. He meant to think. What came out instead was a running, lifelong act of self-examination he called <em>essais</em> — <b>'attempts' or 'trials'</b>, because that is all they are: tries, not conclusions.</p>
+  <p>He wrote about everything, but always circling back to the only subject he trusted himself on — <em>himself.</em> His kidney stones. His fear of death. His terrible memory. His bowels, his sex life, his cat (<em>'when I play with my cat, how do I know she is not playing with me?'</em>). <b>'I am myself the matter of my book,'</b> he warns the reader on page one, half-apologising.</p>
+  <p>The stance under all of it is a question, carved on his medal: <b><em>Que sais-je?</em> — 'What do I know?'</b> Not despair — humility as a method. He distrusts every system, every certainty, every cruelty done in the name of one. Writing through the French wars of religion, with Catholics and Protestants slaughtering each other over doctrine, he keeps insisting that a man who is honestly unsure is less dangerous than a man who is sure.</p>
+  <p>He never finished. He kept adding to the essays until he died, layering second and third thoughts over the first, so the book physically grows more uncertain, more qualified, more human, the longer he lives with it.</p>`,
+  why:`
+  <p class="lede">Because he invented the form you are reading right now — and, arguably, the way you experience being a person.</p>
+  <p>Augustine had turned the gaze inward eleven hundred years earlier, but he did it kneeling, addressing God, narrating a single arc from sin to salvation. Montaigne takes the inward gaze and <b>removes the altar.</b> No God as audience, no conversion at the end, no shape at all — just a mind observing itself honestly, changing its opinions, admitting confusion. That is the secular self, and we still live inside it.</p>
+  <p>And the influence is direct and traceable. <b>Shakespeare read him</b> in John Florio's 1603 English translation — <em>Hamlet's</em> skeptical, self-watching mind is often laid beside him, and the borrowing in <em>The Tempest</em> and <em>King Lear</em> is a scholarly 'smoking gun': Gonzalo's whole speech about the ideal commonwealth is lifted almost word for word from Montaigne's essay 'Of Cannibals.' Pascal spent his life arguing with him. Descartes built his certainty specifically to answer Montaigne's doubt. The essay itself — the thing every columnist and blogger and student now writes — is his single invention.</p>
+  <p>If Thread 04 of this shelf is 'how did people get an inside,' Montaigne is the moment the inside stops needing God to be worth writing down.</p>`,
+  sticky:[
+    {h:"He invented the word 'essay.'", p:"<em>Essai</em> is French for a try, a test, an attempt — and he chose it precisely because he was <em>not</em> claiming to have the answer. Every essay you have ever been assigned, every op-ed, every personal blog post, descends from a bored nobleman deciding that 'here is my unfinished attempt at thinking about this' was a thing worth writing down. It was a radical act of humility that conquered the world."},
+    {h:"'Because it was he, because it was I.'", p:"The great love of his life was his friend Étienne de La Boétie, who died young. Asked why the friendship ran so deep, Montaigne wrote the most famous sentence ever written about friendship: <em>'If you press me to say why I loved him, I feel it can only be expressed by answering: because it was he, because it was I.'</em> No reason. No utility. Just those two particular people. He never got over the loss, and some read the whole vast book as a conversation continued with the dead."},
+    {h:"'What do I know?'", p:"His motto — <em>Que sais-je?</em> — struck on a medal beside a balance. In an age of people burning each other alive over religious certainty, he built an entire philosophy out of the sentence 'I might be wrong.' It is the least glamorous and possibly the most useful idea in this whole shelf."},
+    {h:"Shakespeare stole from him, and we can prove it.", p:"Gonzalo's utopian speech in <em>The Tempest</em> — no trade, no letters, no magistrate, no wine or corn or metal — is copied, almost phrase for phrase, from Florio's translation of the essay 'Of Cannibals.' It is one of the very few places we can catch Shakespeare with a specific open book on his desk. And the book was Montaigne."},
+    {h:"He asked who the real savages were, in 1580.", p:"In 'Of Cannibals,' having heard about the Tupinambá people of Brazil, he flips the whole colonial frame: yes, they eat their dead enemies — but Europeans torture the living, break them on wheels, and burn them at the stake in the name of God, which is worse. 'Each man calls barbarism whatever is not his own custom.' The 'noble savage' starts here — and so, quietly, does cultural relativism."}
+  ],
+  idea:`
+  <p class="lede">The self is not a fixed thing you report on — it is a shifting, contradictory process you can only ever <em>attempt</em> to catch, and honesty about that is worth more than false certainty.</p>
+  <p>Montaigne keeps discovering that he does not hold still. He believes one thing in the morning and its opposite at night; he is brave and cowardly, generous and petty, the same man and a different one. Rather than hide this behind a tidy argument, he makes it the subject. The book's form — endless, self-revising, inconclusive — <em>is</em> its philosophy.</p>
+  <p>Portable version: <b>'I do not portray being. I portray passing.'</b> He was the first writer to treat a human being as a verb rather than a noun — and the novel, three centuries of it, is essentially that discovery worked out at length.</p>`,
+  wrong:[
+    {b:"The essays are not essays in the modern school sense.", p:"No thesis, no five paragraphs, no conclusion. They wander, digress, contradict themselves, quote Latin for pages, and stop when he loses interest. The word we inherited from him has become far more rigid than the thing he actually did."},
+    {b:"He was not a hermit or a depressive.", p:"He was a working magistrate, twice mayor of Bordeaux, a diplomat trusted by kings on both sides of a civil war. The tower was a retreat, not a cell. The detachment in the writing is a hard-won public man's, not a recluse's."},
+    {b:"'Que sais-je?' is not lazy relativism.", p:"His doubt is a discipline, aimed at cruelty and fanaticism, not a shrug. He is skeptical <em>so that</em> he will not kill anyone over an idea — a very different thing from not caring what is true."},
+    {b:"He did not think he was inventing anything.", p:"He thought he was a minor nobleman writing self-indulgent notes to pass the time, and repeatedly apologises for the triviality of his subject. He had no idea he was founding a literary form and modelling a new kind of self. The most influential thing here was written by a man who thought it barely mattered."}
+  ],
+  take:`<p>Montaigne is the quiet hinge of this whole shelf, and the easiest to underrate because he never raises his voice. Homer, Dante, Milton reach for the cosmos; Montaigne reaches for his own kidney stone and his dead friend, and somehow that turns out to be the more radical move. By insisting that one ordinary, changeable, uncertain private self was a fit subject for serious writing — with no God required to justify it — he quietly authorised everything that came after: the novel, the memoir, the personal essay, the entire modern assumption that your inner life is interesting and real. The loudest thing in the modern world was started by the most modest voice in this collection.</p>`,
+  counter:`<p>The flattering story — Montaigne as the first modern, the genial skeptic who invented us — can be overdone. He was a slave-era aristocrat of leisure whose famous tolerance had real limits, whose skepticism some read as a convenient way of endorsing the established order (don't rock the boat, since you can't be sure of anything anyway), and whose endless self-attention can tip into the self-absorption he is sometimes accused of fathering in all of us. And crediting one Frenchman with 'the modern self' is exactly the tidy origin-story this app keeps warning you about — the interior was built by many hands over centuries, and Montaigne is a landmark in it, not a sole inventor.</p>`,
+  people:[
+    {k:"Michel de Montaigne", v:"The author, and his own main character — a Périgord nobleman, magistrate, and twice mayor of Bordeaux who turned self-observation into a literary form. Watches himself for twenty years and reports, with a candour nobody had risked before, that a person is a moving target."},
+    {k:"Étienne de La Boétie", v:"Montaigne's beloved friend, a brilliant young magistrate and writer who died of illness at 32 in 1563. His loss is the wound at the centre of the book; the essay 'Of Friendship' is his monument, and some read the entire <em>Essays</em> as a conversation Montaigne could no longer have with him."},
+    {ref:"socrates", here:"Montaigne's hero and model — the philosopher who knew that he knew nothing, questioned everything, and wrote none of it down. 'Que sais-je?' is Socratic ignorance turned into a way of life."},
+    {k:"John Florio", v:"The Italian-English scholar whose 1603 translation carried Montaigne into English — and onto Shakespeare's desk. Without Florio there is no Montaigne in <em>The Tempest</em> or <em>King Lear</em>, and English has a different word for 'essay.'"},
+    {k:"Raymond Sebond", v:"A medieval theologian whose book Montaigne translated, and whose 'defence' became the pretext for his longest, most corrosive essay — the 'Apology for Raymond Sebond,' which defends religion so weakly and doubts human reason so thoroughly that it ends up undermining nearly all certainty. Home of 'Que sais-je?'"}
+  ],
+  places:[
+    {k:"The tower", v:"Montaigne's round library-study in his château near Bordeaux, lined with a thousand books, its ceiling beams carved with Greek and Latin sayings. He retreated here in 1571 to think — and, without planning to, invented a form of writing. One of the most productive rooms in literary history."},
+    {k:"Bordeaux", v:"The city Montaigne served as mayor, twice, during the French wars of religion — proof that the great skeptic was also a capable public official, negotiating between Catholic and Protestant factions bent on each other's destruction."},
+    {k:"The New World", v:"Brazil, reached only in report and in the persons of three Tupinambá men Montaigne met in Rouen. From that thin contact he wrote 'Of Cannibals' and turned the mirror back on Europe: the true barbarians, he suggests, are the civilised."}
+  ],
+  terms:[
+    {k:"essai", v:"French for 'attempt, trial, test' — and Montaigne's name for what he was doing: trying out thoughts, not delivering verdicts. The entire modern genre of the essay, and its built-in humility, lives in that one chosen word."},
+    {k:"Que sais-je?", v:"'What do I know?' — Montaigne's motto and method. Doubt raised to a principle: he is uncertain on purpose, as a guard against the fanatical certainty that was burning his country down."},
+    {k:"Pyrrhonism", v:"The ancient Greek skepticism Montaigne revived — the practice of suspending judgment, since every argument can be met by a counter-argument. In his hands it becomes less a doctrine than a temperament: tolerant, curious, and slow to condemn."},
+    {k:"the noble savage", v:"The idea — traceable to 'Of Cannibals' — that peoples living closer to nature may be more virtuous than 'civilised' ones. Hugely influential, frequently misused, and later pinned (a little unfairly) on Rousseau. It starts with Montaigne asking who the real barbarians are."}
+  ],
+  context:`
+  <p class="lede">Written in retirement, during a civil war, by a man watching his country tear itself apart over certainty.</p>
+  <p>Montaigne (1533–1592) lived through the French Wars of Religion — decades of massacre between Catholics and Protestants, including the St Bartholomew's Day slaughter of thousands. That is the shadow the <em>Essays</em> are written against, and it explains their deepest commitment: a horror of cruelty, and a suspicion of anyone certain enough to kill for an idea.</p>
+  <p>He published Books I and II in 1580, added Book III in 1588, and went on annotating his own copy until he died in 1592 — so the book grows more layered and self-questioning to the end. It was placed on the Catholic Index of banned books in the following century, which did nothing to slow it: by then it was already loose in the bloodstream of Europe, remaking how people wrote and, slowly, how they understood themselves.</p>`,
+  echoes:[
+    {k:"→ Confessions", to:"confessions", v:"Augustine turned the gaze inward first — but on his knees, addressed to God, arced toward salvation. Montaigne keeps the inward gaze and removes the altar. The self becomes worth writing down for its own sake."},
+    {k:"→ Hamlet", to:"hamlet", v:"Shakespeare read Montaigne in Florio's translation, and Hamlet's self-watching, skeptical, unresolved mind is the closest thing on stage to an essay thinking itself. The borrowing in <em>The Tempest</em> and <em>Lear</em> is provable; the kinship in <em>Hamlet</em> is everywhere."},
+    {k:"→ King Lear", to:"lear", v:"Scholars catch Shakespeare mining Florio's Montaigne for <em>Lear</em> as well as <em>The Tempest</em> — the play's raw questions about nature, cruelty, and 'unaccommodated man' breathe the same air as the essays."},
+    {k:"→ Ulysses", to:"ulysses", v:"The endpoint of the road Montaigne opens: if one ordinary private mind, watched honestly as it wanders, is a fit subject for literature, then Joyce's seven hundred pages inside Leopold Bloom's head are the form taken to its limit."}
+  ]
+}
 ,
 
 "quixote": {
@@ -1465,7 +1779,7 @@ const WORKS = {
     {b:"'Tilting at windmills' is not the theme.", p:"It's a gag in chapter eight. The theme is what happens when a fiction is more habitable than the world, and who gets punished for saying so."}
   ],
   take:`<p>The greatness of the book is that it will not adjudicate. Every era has read it and come back with a different verdict — the seventeenth century laughed at him, the Romantics made him a hero, the twentieth century made him a martyr, Nabokov called it a handbook of cruelty. It is a mirror and it does not care what you see in it.</p>`,
-  counter:`<p>That is the comfortable reading, and there is a case that the ending is not ambiguous at all. Cervantes has him <b>explicitly renounce the books</b>, by name, in a will, and die a sane Christian death under his real name. The author put a sword through the fantasy on purpose, in the last chapter, deliberately. Every romantic reading since — every impossible dream, every noble madman — is a refusal to read the final ten pages. Perhaps the book is simply against the dream, and we have spent four hundred years being unable to accept that.</p>`,
+  counter:`<p>There is a case that the ending is not ambiguous at all. Cervantes has him <b>explicitly renounce the books</b>, by name, in a will, and die a sane Christian death under his real name. The author put a sword through the fantasy on purpose, in the last chapter, deliberately. Every romantic reading since — every impossible dream, every noble madman — is a refusal to read the final ten pages. Perhaps the book is simply against the dream, and we have spent four hundred years being unable to accept that.</p>`,
   people:[
     {k:"Don Quixote", v:"Alonso Quixano, a nobody with a small estate and too much time. Courteous, learned, generous, and completely wrong about everything he can see."},
     {k:"Sancho Panza", v:"Illiterate, hungry, greedy, wise. Speaks in a torrent of proverbs. He is the one who actually grows — and he is the one who, at the end, refuses to let the dream go."},
@@ -1515,7 +1829,7 @@ const WORKS = {
   <p>Then his father's ghost appears on the battlements and says he was <b>murdered</b> — poison poured in his ear while he slept — by Claudius. It demands revenge.</p>
   <p>And Hamlet... doesn't.</p>
   <p>He puts on an "antic disposition" — pretending to be mad, or possibly not entirely pretending. He is savage to Ophelia, the girl who loves him. He stages a play re-enacting the murder to watch Claudius's face, and Claudius bolts from the room, which is all the proof anyone could want.</p>
-  <p>Then he finds Claudius alone, on his knees, praying — <b>and doesn't kill him</b>, because a man killed at prayer goes to heaven, and Hamlet wants him damned. It is the single most terrifying reason anyone has ever given for sparing a life. (Claudius then stands up and admits his prayer was worthless anyway.)</p>
+  <p>Then he finds Claudius alone, on his knees, praying — <b>and doesn't kill him</b>, because a man killed at prayer goes to heaven, and Hamlet wants him damned. It is the most terrifying reason anyone has ever given for sparing a life. (Claudius then stands up and admits his prayer was worthless anyway.)</p>
   <p>He goes to confront his mother, hears someone behind a curtain, stabs blind — and it's Polonius, Ophelia's father. He shrugs. That accident sets off everything that follows: Ophelia goes mad and drowns; her brother Laertes comes home wanting blood.</p>
   <p>Shipped to England with two schoolfriends carrying a sealed order for his execution, Hamlet forges a replacement naming <em>them</em>, and they are killed, and he mentions it in passing, without a flicker.</p>
   <p>He comes back. He holds a skull in a graveyard. Then a rigged duel: a poisoned blade, a poisoned cup. His mother drinks it. Laertes cuts him, he takes the sword and cuts Laertes, Laertes confesses — and Hamlet finally, in the last ninety seconds of a four-hour play, kills Claudius.</p>
@@ -1541,7 +1855,7 @@ const WORKS = {
     {b:"The Ghost's theology is illegal.", p:"It says it comes from Purgatory. Protestant England had <em>abolished</em> Purgatory. Meanwhile Hamlet is a student at Wittenberg — Luther's own university. The play's premise is quietly, deliberately heretical, and every Elizabethan in the theatre would have felt it."}
   ],
   take:`<p>The delay is not a flaw to be explained away. It's the point. Shakespeare put a modern consciousness inside a medieval revenge plot and let it tear the plot apart from the inside. A mind that genuinely sees a situation whole cannot obey a simple instruction about it, and that is a permanent condition of being intelligent.</p>`,
-  counter:`<p>Notice how flattering that reading is, and notice who has been making it for two centuries: people who think for a living, concluding that the man who thinks too much is the hero. Now look at what his thinking actually produces. A girl driven mad and drowned. An old man stabbed through a curtain. Two schoolfriends executed on a forged warrant, dismissed in a line. His mother poisoned. A kingdom handed to a foreign army. Shakespeare deliberately put <b>two</b> other men in this play who avenge their fathers — Laertes and Fortinbras — and both act at once, and one of them ends the play owning Denmark. The play may be considerably less impressed by Hamlet's mind than Hamlet is.</p>`,
+  counter:`<p>For two centuries this reading has been made mostly by people who think for a living — who conclude, unsurprisingly, that the man who thinks too much is the hero. Now look at what his thinking actually produces. A girl driven mad and drowned. An old man stabbed through a curtain. Two schoolfriends executed on a forged warrant, dismissed in a line. His mother poisoned. A kingdom handed to a foreign army. Shakespeare deliberately put <b>two</b> other men in this play who avenge their fathers — Laertes and Fortinbras — and both act at once, and one of them ends the play owning Denmark. The play may be considerably less impressed by Hamlet's mind than Hamlet is.</p>`,
   people:[
     {k:"Hamlet", v:"Thirty (the gravedigger says so), a student, brilliant, cruel, grieving, and the first person in literature you cannot get to the bottom of."},
     {k:"Claudius", v:"The villain — and a competent king, a genuinely loving husband, and the only man in the play who kneels down and tries to repent. Shakespeare gives him an interior, which is what makes him unbearable."},
@@ -1571,6 +1885,7 @@ const WORKS = {
   <p>Writing openly about who inherits a throne could get you imprisoned. So the theatres wrote about Denmark instead, and everyone understood. Within two years, the Earl of Essex would attempt a coup and be executed, and Shakespeare's own company would be questioned for staging a play about a deposed king the night before.</p>
   <p>Shakespeare's father died in 1601. His only son, Hamnet, had died in 1596, aged eleven.</p>`,
   echoes:[
+    {k:"→ Montaigne", to:"montaigne", v:"Shakespeare read Montaigne in Florio's 1603 translation; Hamlet's self-watching, essaying mind is the stage's closest kin to the Essays, and the borrowings in Lear and The Tempest are provable."},
     {k:"→ The Oresteia", to:"oresteia", v:"Orestes is given the identical order — a father murdered, a mother in the murderer's bed, a command to kill — and he does it in a single scene. Hamlet cannot do it in five acts. The gap between those two plays is the whole invention of the modern interior."},
     {k:"→ Oedipus Rex", to:"oedipus-rex", v:"Freud read them as a pair and built a theory on it: Hamlet cannot kill the man who did the thing he secretly wanted to do. Whether or not you buy it, it has been impossible to un-hear for a century."},
     {k:"→ Don Quixote", to:"quixote", v:"Same five years, same discovery from the other side: an inner life that has come unglued from the world it has to act in. One man acts on his fiction; the other cannot act at all."},
@@ -1614,8 +1929,8 @@ const WORKS = {
     {b:"It is not really about ingratitude.", p:"That's the frame. The subject is what a human being is once everything protective has been removed, and whether the universe is watching."},
     {b:"Edgar's morals are hollow, and Shakespeare knows it.", p:"Characters keep trying to draw lessons — 'the gods are just' — and the play keeps immediately disproving them. Every attempt to make the suffering mean something is staged, and then contradicted, in the next scene."}
   ],
-  take:`<p>This is the first work on this shelf in which the universe does not answer. Job gets a whirlwind. Oedipus gets an oracle that turns out to be true. Dante gets a face inside the light. Lear gets a dead girl in his arms and a messenger who was late, and Shakespeare stages the silence and does not fill it. It is the most modern thing written before the twentieth century, and Beckett is standing directly behind it.</p>`,
-  counter:`<p>That's the twentieth century's Lear — the play as a rehearsal for the absurd — and it is extremely convenient for a secular age that wants Shakespeare on its side. But look at what the play is actually full of. A nameless servant dies trying to stop a torture, for nothing. Kent serves, in disguise, the man who banished him. Edgar carries on his back the father who ordered him killed. Cordelia forgives without being asked to. The nihilist reading has to walk past every one of those and pretend they're decoration. Perhaps the play is not saying the universe is empty. Perhaps it is saying that <b>goodness is real and is not rewarded</b> — which is a harder claim, and a better one, and it is exactly what Job says.</p>`,
+  take:`<p>This is the first work on this shelf in which the universe does not answer. Job gets a whirlwind. Oedipus gets an oracle that turns out to be true. Dante gets a face inside the light. Lear gets a dead girl in his arms and a messenger who was late, and Shakespeare stages the silence and does not fill it. It is one of the most modern things written before the twentieth century, and Beckett is standing directly behind it.</p>`,
+  counter:`<p>The absurdist Lear — the play as a rehearsal for Beckett — is extremely convenient for a secular age that wants Shakespeare on its side. But look at what the play is actually full of. A nameless servant dies trying to stop a torture, for nothing. Kent serves, in disguise, the man who banished him. Edgar carries on his back the father who ordered him killed. Cordelia forgives without being asked to. The nihilist reading has to walk past every one of those and pretend they're decoration. Perhaps the play is not saying the universe is empty. Perhaps it is saying that <b>goodness is real and is not rewarded</b> — which is a harder claim, and a better one, and it is exactly what Job says.</p>`,
   people:[
     {k:"Lear", v:"Eighty and more. A king who has never been contradicted, discovering, in the rain, that he is a man."},
     {k:"Cordelia", v:"Says almost nothing in the entire play. Refuses to perform love, forgives without conditions, and is hanged offstage by a clerk's delay."},
@@ -1643,6 +1958,7 @@ const WORKS = {
   <p>The play opens with a king dividing one. The Gunpowder Plot had been discovered a few months earlier. The country was raw, frightened, and thinking hard about what happens when the top of the state comes off.</p>
   <p>Shakespeare wrote it twice, incidentally: the Quarto and the Folio differ so much that some editors now print them as two separate plays. The <em>Lear</em> you know is a hybrid nobody in 1606 ever saw.</p>`,
   echoes:[
+    {k:"→ Montaigne", to:"montaigne", v:"Scholars catch Shakespeare mining Florio's Montaigne for Lear as well as The Tempest — the play's raw questions about nature, cruelty and 'unaccommodated man' breathe the same air as the essays."},
     {k:"→ Job", to:"bible", v:"The man stripped of everything who demands to know why. Job gets a whirlwind. Lear gets weather."},
     {k:"→ Oedipus Rex", to:"oedipus-rex", v:"Blindness and insight, again — Gloucester only sees after his eyes are taken, exactly like Tiresias, exactly like Oedipus. Shakespeare knew what he was doing."},
     {k:"→ Hamlet", to:"hamlet", v:"The exact inverse. Hamlet thinks and cannot act; Lear acts and has never once thought. Between them Shakespeare covers the entire failure mode of being a person."},
@@ -1692,7 +2008,7 @@ const WORKS = {
     {b:"Satan degenerates, and it's the whole design.", p:"He starts as an archangel making magnificent speeches. He ends as a snake, on his belly, hissing, in a Hell where the fruit turns to ash in his mouth. Anyone whose Satan is the one from Book I has read one twelfth of the poem."}
   ],
   take:`<p>Stanley Fish's reading resolves three hundred years of argument and you cannot unsee it: <b>the poem is a trap.</b> You are <em>meant</em> to be moved by Satan — Milton gives him the finest rhetoric in the language precisely so that you will be — and then, across eleven more books, you watch him shrink into a toad and a snake, and you are made to notice that you were taken in. The reader re-enacts the Fall by being seduced, on schedule, by exactly the sort of argument that worked on Eve. Milton is not of the Devil's party. He is setting you up.</p>`,
-  counter:`<p>That is an extremely elegant machine — and it may be too elegant, because it converts the poem's single most obvious feature into evidence of total authorial control. God is a bore. The Son is a cipher. Heaven is tedious and Hell is thrilling. Fish's theory requires Milton to have engineered every one of those effects deliberately and measured them on a reader he could not see. Blake's objection has not actually been answered: sometimes an imagination simply goes where it wants, and the honest thing to say is that <b>the poem got away from him</b> — and that this is why it is alive.</p>`,
+  counter:`<p>That is an extremely elegant machine — and it may be too elegant, because it converts the poem's most obvious feature into evidence of total authorial control. God is a bore. The Son is a cipher. Heaven is tedious and Hell is thrilling. Fish's theory requires Milton to have engineered every one of those effects deliberately and measured them on a reader he could not see. Blake's objection has not actually been answered: sometimes an imagination simply goes where it wants, and the honest thing to say is that <b>the poem got away from him</b> — and that this is why it is alive.</p>`,
   people:[
     {k:"Satan (Milton's)", v:"Archangel, revolutionary, orator, self-deceiver. The greatest character in English poetry and its author's greatest problem."},
     {k:"God the Father", v:"Speaks in flat legal prose, explains himself at length, and pre-emptively forecloses every objection. Even his defenders find him hard going."},
@@ -1832,7 +2148,7 @@ const WORKS = {
   <p>He proposes again. This time she says yes — and she says it to a man she has revised her entire judgement of, twice.</p>`,
   why:`
   <p class="lede">Two reasons, and neither of them is the wedding.</p>
-  <p><b>First: the technique.</b> Austen perfects <em class="g">free indirect style</em> — third-person narration that slides, without warning or quotation marks, into a character's own private idiom, so you cannot always tell where the narrator stops and Elizabeth begins. It gives you irony and intimacy <em>at the same time</em>, which had never been possible before. Flaubert, James, and Joyce all build on it. It is the single most important technical development in the history of the novel and it happens in a book about country dances.</p>
+  <p><b>First: the technique.</b> Austen perfects <em class="g">free indirect style</em> — third-person narration that slides, without warning or quotation marks, into a character's own private idiom, so you cannot always tell where the narrator stops and Elizabeth begins. It gives you irony and intimacy <em>at the same time</em>, which had never been possible before. Flaubert, James, and Joyce all build on it. Critics have called it the most important technical development in the history of the novel, and it happens in a book about country dances.</p>
   <p><b>Second: it is the <em>Nicomachean Ethics</em> in a dress.</b> Nobody in this novel is converted by an argument. Elizabeth and Darcy are <b>trained</b> out of their faults — slowly, by experience, through humiliation — and what changes is not their feelings but their <em>judgement</em>. That is Aristotle's account of how character actually changes, dramatised more convincingly than Aristotle managed himself.</p>`,
   sticky:[
     {h:"The first sentence is a lie.", p:"<em>It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.</em> It is not universally acknowledged and it is not true. It is what Mrs Bennet thinks, delivered in the voice of God. Austen opens the book by putting a foolish opinion inside a magisterial sentence — and that trick is the entire novel."},
@@ -1852,7 +2168,7 @@ const WORKS = {
     {b:"She was a professional, not a hobbyist.", p:"She wrote the first draft at twenty-one, was rejected by a publisher who never opened it, and revised it for sixteen years. Then she sold the copyright outright: she <b>asked £150 and settled for £110</b>, and earned nothing further, ever. Egerton made roughly <b>£450</b> from the first two editions alone. Walter Scott, the bestselling novelist alive, wrote in his diary that she could do the thing he could not do."}
   ],
   take:`<p>The book people file under romance is a book about the education of judgement, and its emotional peak is a woman alone, discovering she has been a fool. That discovery — private, unwitnessed, and irreversible — is Austen's actual subject, and it is unfilmable, which is why the culture that adores this novel has quietly replaced its climax with a man emerging from a lake.</p>`,
-  counter:`<p>Notice how much that reading wants to rescue Austen from her own readers, and notice who tends to make it: people faintly embarrassed to love a book about weddings. It <b>is</b> a romance. Austen wanted the wedding, wrote it with enormous pleasure, and made it earned. There is something slightly suspect about insisting that a novel which has given more delight than almost any other is <em>really</em> a treatise on epistemology — that move is its own species of vanity, and Elizabeth Bennet would have recognised it immediately.</p>`,
+  counter:`<p>There is something faintly embarrassed in that reading — a wish to rescue Austen from the readers who love her for the weddings. It <b>is</b> a romance. Austen wanted the wedding, wrote it with enormous pleasure, and made it earned. There is something slightly suspect about insisting that a novel which has given more delight than almost any other is <em>really</em> a treatise on epistemology — that move is its own species of vanity, and Elizabeth Bennet would have recognised it immediately.</p>`,
   people:[
     {k:"Elizabeth Bennet", v:"Clever, quick, proud of being quick — and wrong about the two most important judgements she makes. The first heroine in English whose intelligence is her flaw."},
     {k:"Darcy", v:"Ten thousand a year, no small talk, and genuinely arrogant. He is not misunderstood; he is <em>rude</em>, and he has to be told so before he changes."},
@@ -1910,7 +2226,7 @@ const WORKS = {
   <p>Ahab hears that answer and refuses it. He goes to catch Leviathan and demand an explanation. He converts a commercial voyage into a metaphysical assault, and he takes thirty men with him.</p>
   <p>And Melville's formal solution is the strangest and best thing in American literature: he assembles <b>everything humans know</b> about whales — the science, the history, the anatomy, the trade, the art, the etymology — and demonstrates, page after exhaustive page, that <b>none of it touches the thing.</b> The encyclopaedia is the argument. The more completely you know about the whale, the less you understand it. That's what those 'boring' chapters are doing, and it is why they cannot be cut.</p>`,
   sticky:[
-    {h:"It failed completely, and destroyed him.", p:"It sold <b>3,215 copies</b> in his lifetime and earned him about <b>$1,260</b>. He stopped publishing novels and spent nineteen years as a customs inspector on the New York docks. When he died in 1891, the brief <em>New York Times</em> death notice called the book <b>'Mobie Dick.'</b> It was rediscovered in the 1920s. Greatness is not a market signal."},
+    {h:"It failed completely, and destroyed him.", p:"It sold <b>3,715 copies</b> in his lifetime and earned him about <b>$1,260</b>. He stopped publishing novels and spent nineteen years as a customs inspector on the New York docks. When he died in 1891, the brief <em>New York Times</em> death notice called the book <b>'Mobie Dick.'</b> It was rediscovered in the 1920s. Greatness is not a market signal."},
     {h:"'Strike through the mask.'", p:"Starbuck says: it's an animal, it meant nothing by it, this is madness. Ahab's answer is that everything visible is a mask, and behind it there is either something that hates us or <em>nothing at all</em> — and he cannot live without knowing which. He does not hunt the whale because it hurt him. He hunts it to find out whether the universe means anything."},
     {h:"The terror is the whiteness, not the whale.", p:"There is an entire chapter arguing that white is the most frightening colour in existence — because it is not a colour. It is a blank, an absence, the colourless all-colour, the suggestion that behind the painted world there is nothing to find. That chapter is the intellectual centre of the book and most readers skim it."},
     {h:"Ahab appears on page 130.", p:"The most famous character in American fiction is offstage for a fifth of the novel. Melville makes you wait, and hear about him, and dread him, before the man with the ivory leg finally comes up the hatch."},
@@ -1926,8 +2242,8 @@ const WORKS = {
     {b:"The whaling chapters are not padding.", p:"They are the proof. Skipping them to get to the plot is like skipping the evidence to get to the verdict."},
     {b:"It wasn't ignored — it was disliked.", p:"It was reviewed and dismissed. The English edition accidentally left out the epilogue, so British critics complained, reasonably, that the narrator dies and then goes on narrating."}
   ],
-  take:`<p>Melville read the Book of Job and refused its answer. God tells Job: look at Leviathan, you cannot catch it, be quiet. Ahab says: <em>watch me.</em> The book is what happens when a human being will not accept that there may be nothing behind the mask — and it destroys him, and Melville never once tells you he was wrong to try. That refusal to condemn Ahab is the most radical thing in nineteenth-century literature.</p>`,
-  counter:`<p>That is the twentieth-century Ahab — the tragic metaphysical hero — and it flatters the reader with the grandeur of despair. Look at what the book actually shows you. Ahab hijacks other men's livelihoods for a private grudge. He refuses to help a fellow captain search the sea for his drowned son. He ignores every duty he has to his owners and his crew, and he kills thirty men, including a boy who has already lost his mind. <b>Starbuck is right</b>, and the novel knows he is right, and the moral centre of the book may simply be a decent man who fails to stop a maniac. The grandeur is real. So is the body count. And admiring the grandeur is precisely the mistake the crew made.</p>`,
+  take:`<p>Melville read the Book of Job and refused its answer. God tells Job: look at Leviathan, you cannot catch it, be quiet. Ahab says: <em>watch me.</em> The book is what happens when a human being will not accept that there may be nothing behind the mask — and it destroys him, and Melville never once tells you he was wrong to try. That refusal to condemn Ahab is one of the most radical things in nineteenth-century literature.</p>`,
+  counter:`<p>Cast Ahab as the tragic metaphysical hero and you flatter the reader with the grandeur of despair. Look at what the book actually shows you. Ahab hijacks other men's livelihoods for a private grudge. He refuses to help a fellow captain search the sea for his drowned son. He ignores every duty he has to his owners and his crew, and he kills thirty men, including a boy who has already lost his mind. <b>Starbuck is right</b>, and the novel knows he is right, and the moral centre of the book may simply be a decent man who fails to stop a maniac. The grandeur is real. So is the body count. And admiring the grandeur is precisely the mistake the crew made.</p>`,
   people:[
     {k:"Ishmael", v:"The outcast son, named for the boy sent into the desert in Genesis. Melville expects you to know that before the second sentence."},
     {k:"Ahab", v:"Named for a king in the Book of Kings who did evil in the sight of the Lord. Melville tells you that too, in advance, and does it anyway."},
@@ -1982,7 +2298,7 @@ const WORKS = {
   why:`
   <p class="lede">Because Dostoevsky stages the fight fairly — and he was terrified of the result.</p>
   <p>He was a devout Orthodox Christian. He wrote, in Ivan, the single most powerful indictment of God in world literature. And he knew he had. He wrote to his editor worrying that his own reply would not be strong enough.</p>
-  <p>It is also the greatest novel of ideas ever written for a precise reason: <b>the ideas are people.</b> Ivan's atheism is not a position he holds; it is a wound he cannot close. Bakhtin's word for what Dostoevsky invented is <em class="g">polyphony</em> — the characters are not the author's puppets. They argue back, and sometimes they win.</p>`,
+  <p>It is also the greatest novel of ideas for a precise reason: <b>the ideas are people.</b> Ivan's atheism is not a position he holds; it is a wound he cannot close. Bakhtin's word for what Dostoevsky invented is <em class="g">polyphony</em> — the characters are not the author's puppets. They argue back, and sometimes they win.</p>`,
   sticky:[
     {h:"Ivan returns his ticket.", p:"He does not say God doesn't exist. He says that if the entrance fee to eternal harmony is one small girl locked in a freezing outhouse, beating her chest and praying to 'dear kind God' — then he respectfully hands the ticket back. It is the most unanswerable page in literature and a believer wrote it."},
     {h:"Christ says nothing to the Grand Inquisitor.", p:"The old Cardinal tells him, for twenty pages, that he was wrong about human beings — that they don't want freedom, they want bread and mystery and someone to obey. And the defence is given <b>no lines at all.</b> Christ kisses him on the mouth and walks out. The kiss burns in the old man's heart. <em>He adheres to his idea.</em>"},
@@ -2152,7 +2468,7 @@ const WORKS = {
     {b:"Kafka's Metamorphosis is a different thing.", p:"Different book, different century, no relation beyond the word. If someone says 'Metamorphosis' and means a man waking up as an insect, they are not talking about this."}
   ],
   take:`<p>Ovid is the anti-Virgil, and it destroyed him. Virgil gave Rome the poem it wanted — obedience, sacrifice, the cost worth paying. Ovid, one generation on, wrote a poem in the same metre in which the gods are rapists, the state is dangerous, truthful artists get turned into spiders, and the only law in the universe is that nothing holds its shape. Then the emperor sent him to the edge of the world, and he died there begging. We inherited Virgil as the serious one and Ovid as the entertainment. That is exactly backwards.</p>`,
-  counter:`<p>Careful — that reading makes Ovid a dissident, and he almost certainly wasn't one. He was a wildly successful society poet who wrote a seduction manual in a city where the emperor had just made adultery a crime, and then did something else stupid that we cannot identify. The <em>Metamorphoses</em> is playful, virtuosic, and frequently frivolous, and reading it as a coded indictment of tyranny flatters us at least as much as it flatters him.</p>
+  counter:`<p>Ovid-as-dissident is a flattering invention, and he almost certainly wasn't one. He was a wildly successful society poet who wrote a seduction manual in a city where the emperor had just made adultery a crime, and then did something else stupid that we cannot identify. The <em>Metamorphoses</em> is playful, virtuosic, and frequently frivolous, and reading it as a coded indictment of tyranny flatters us at least as much as it flatters him.</p>
   <p>And notice the shape of that take, because it is the same shape I have reached for in nearly every file in this app: the sceptical, cost-counting, against-the-powerful reading. It may well be right here. It is also <b>my reflex</b>, and you should discount it accordingly.</p>`,
   people:[
     {k:"Ovid", v:"Publius Ovidius Naso. Rich, funny, fashionable, and the most naturally gifted poet in Latin. Exiled at fifty and never allowed back."},
@@ -2211,6 +2527,7 @@ const THREADS = [
   tag:"Thread 01",
   q:"What is a life actually for?",
   steps:[
+    {slug:"gilgamesh", n:"00", w:"Gilgamesh", move:"The oldest answer, and the bleakest. A king tries to defeat death itself, fails completely, and comes home to learn the only immortality is the city wall he built and the friend he loved. There is no way out; there is only what you leave."},
     {slug:"iliad", n:"01", w:"The Iliad", move:"Glory is worth your life. Achilles is told he can go home and live long and be forgotten, or stay and die young and be sung about forever. He takes the song."},
     {slug:"odyssey", n:"02", w:"The Odyssey", move:"No it isn't. A goddess offers Odysseus immortality on a beautiful island. He sits on the beach crying, and says no, and goes home to a rocky island and an ageing wife and a death."},
     {slug:"aeneid", n:"06", w:"The Aeneid", move:"Neither of you gets to choose. Aeneas wants Dido, wants Troy, wants to stop — and duty takes all of it, and the poem ends with him murdering a man who is begging."},
@@ -2221,7 +2538,8 @@ const THREADS = [
   tag:"Thread 02",
   q:"Can you fix yourself, or do you have to be rescued?",
   steps:[
-    {slug:"nicomachean-ethics", n:"05", w:"Nicomachean Ethics", move:"Practise. Character is a habit, not a decision. You become brave by doing brave things, badly, until the doing has rewired what you are."},
+    {slug:"meditations", n:"04.5", w:"Meditations", move:"Neither. You are not broken and you do not need rescuing — you are gripping the wrong things. Only your own judgment was ever up to you; fix that, this second, and you are already free. The Stoic dissolves the question."},
+     {slug:"nicomachean-ethics", n:"05", w:"Nicomachean Ethics", move:"Practise. Character is a habit, not a decision. You become brave by doing brave things, badly, until the doing has rewired what you are."},
     {slug:"confessions", n:"07", w:"Confessions", move:"I practised. I resolved. I meant it every time. The will itself is the broken part — and a broken thing cannot repair itself. You need grace."},
     {slug:"dante", n:"08", w:"The Divine Comedy", move:"Then habit is eternity. Nobody in Hell is being tortured by anyone. They are simply being what they made themselves, forever. Hell is a disposition that finished setting."},
     {slug:"faust", n:"12", w:"Faust", move:"Never stop, never rest, never be satisfied — and be saved anyway, by a grace you did not earn, granted by a girl you destroyed. Which is Augustine's answer, arriving late in fancy dress."}
@@ -2243,7 +2561,8 @@ const THREADS = [
   steps:[
     {slug:"oresteia", n:"03.1", w:"The Oresteia", move:"A god orders Orestes to kill his mother. She bares her breast to him. He asks his friend what to do, his friend says three lines, and he does it. One scene."},
     {slug:"oedipus-rex", n:"03.2", w:"Oedipus Rex", move:"Now the man is the investigation. Everyone tells him to stop. He cannot, because he is the man who has to know — and the knowing is the catastrophe."},
-    {slug:"hamlet", n:"10.1", w:"Hamlet", move:"The identical order — murdered father, mother in the killer's bed, avenge me — and he cannot do it for five acts. The not-doing is the play. This gap is the whole invention of the modern interior."},
+    {slug:"montaigne", n:"09", w:"Montaigne", move:"Between the Greeks and the novel, a Frenchman turns the gaze on himself with no God watching — and invents the essay by writing his own changing mind down as it wanders. The inside stops needing heaven to be worth recording."},
+     {slug:"hamlet", n:"10.1", w:"Hamlet", move:"The identical order — murdered father, mother in the killer's bed, avenge me — and he cannot do it for five acts. The not-doing is the play. This gap is the whole invention of the modern interior."},
     {slug:"ulysses", n:"17", w:"Ulysses", move:"And then the inside eats the outside entirely: seven hundred pages of one ordinary man's head, on one ordinary day, in which nothing happens and everything is there."}
   ]
 },
@@ -2296,12 +2615,14 @@ const THREADS = [
    THE TIMELINE — the date view. The numbers are IDs; this is when.
    ============================================================ */
 const YEARS = {
+  "gilgamesh":{y:-2100, d:"c. 2100–1200 BC"},
   "bible":{y:-900, d:"c.900 BC – AD 100"},
   "iliad":{y:-750, d:"c. 750 BC"},
   "odyssey":{y:-700, d:"c. 700 BC"},
   "oresteia":{y:-458, d:"458 BC"},
   "antigone":{y:-441, d:"c. 441 BC"},
   "oedipus-rex":{y:-429, d:"c. 429 BC"},
+  "symposium":{y:-385, d:"c. 385 BC"},
   "republic":{y:-375, d:"c. 375 BC"},
   "nicomachean-ethics":{y:-340, d:"c. 340 BC"},
   "aeneid":{y:-19, d:"29–19 BC"},
@@ -2309,6 +2630,8 @@ const YEARS = {
   "confessions":{y:400, d:"c. 400"},
   "dante":{y:1320, d:"1308–1321"},
   "hamlet":{y:1600, d:"c. 1600"},
+  "meditations":{y:175, d:"c. AD 170–180"},
+  "montaigne":{y:1580, d:"1580–1588"},
   "quixote":{y:1605, d:"1605 & 1615"},
   "lear":{y:1606, d:"c. 1606"},
   "paradise-lost":{y:1667, d:"1667"},
@@ -2321,6 +2644,7 @@ const YEARS = {
 };
 
 const GAPS = [
+  {after:"gilgamesh", label:"≈ 1,300 years", note:"From the oldest surviving epic to Homer. Whole civilisations — Sumer, Akkad, Babylon, the Hittites — rose and fell in the gap, and their greatest poem was buried and forgotten in it, not read again until the 1870s."},
   {after:"ovid", label:"≈ 390 years", note:"Rome falls apart. The silence between the last pagan poet and the first Christian autobiographer is longer than the gap between Shakespeare and you."},
   {after:"confessions", label:"≈ 900 years", note:"Nine centuries with nothing in the tradition. Not because nothing was written — because this list was assembled by people who weren't looking at Baghdad, Chang'an, or Kyoto."},
   {after:"dante", label:"≈ 280 years", note:"Dante to Shakespeare. Printing arrives, the Reformation happens, the Americas are invaded, and the next name in the tradition is an English playwright."},
@@ -2365,7 +2689,7 @@ function timelineHTML(){
 
   return `<div class="col">
     <header class="hero">
-      <span class="lbl">The Timeline · 22 works · 2,800 years</span>
+      <span class="lbl">The Timeline · ${WORK_COUNT} works · 4,000 years</span>
       <h1>There is no <em>first</em>.<br>There is only <em>when</em>.</h1>
       <p>Numbered lists imply a relay race — first this, then that, each one leading to the next. These works were not written that way. Sorted by when they were actually composed, three things a numbered list hides become visible at once:</p>
       <p><b>Antigone was written before Oedipus Rex.</b> <b>War and Peace was written before Karamazov.</b> And <b>Hamlet, Don Quixote and King Lear happened inside six years</b>, in two countries, between men who never met.</p>
@@ -2380,7 +2704,7 @@ function homeHTML(){
   return `
   <div class="col">
     <header class="hero">
-      <span class="lbl">22 works · 2,800 years</span>
+      <span class="lbl">${WORK_COUNT} works · 4,000 years</span>
       <h1>It isn't a reading list.<br>It's <em>a long argument</em>.</h1>
       <p>These are not a queue of great books that happen to be old. They are in conversation, and mostly they are in <b>disagreement</b> — each one arriving to refute, extend, or quietly sabotage the one before it. Almost none of them say so.</p>
       <p>These are the arguments. Follow one across the centuries and you have something to say that cannot be got from reading any of them alone.</p>
@@ -2390,10 +2714,7 @@ function homeHTML(){
     <section class="shape">
       <h2>The shape of the shelf</h2>
       <ul>
-        <li><span class="f">Epic · 5</span><span class="s">Homer, Virgil, Dante, Milton — and then <b>it stops.</b> The form that carried the West for 2,400 years ends in 1667 and nobody writes another one.</span></li>
-        <li><span class="f">Drama · 6</span><span class="s">Three Greeks, two Shakespeares, and Goethe — whose <em>Faust</em> is a play that <b>cannot be staged.</b> The form dies by becoming unperformable.</span></li>
-        <li><span class="f">Confession · 1</span><span class="s">Augustine, alone. He invented the inside of a person in AD 400, and then <b>nobody used it for a thousand years.</b></span></li>
-        <li><span class="f">The novel · 6</span><span class="s">Does not exist before 1605. Then it <b>eats everything</b> — and by the end of this list it is the only form still standing.</span></li>
+        ${SEQUENCE.filter(w => w.kids).map(w => `<li><span class="f">${w.t} · ${w.kids.length}</span><span class="s">${SHELF_NOTES[w.t] || ""}</span></li>`).join("")}
       </ul>
     </section>
 
@@ -2888,6 +3209,21 @@ const PRON = {
   "Cephalus & Polemarchus":"SEF-uh-lus · pol-uh-MAR-kus", "telos":"TEL-oss",
   "theoria":"thee-oh-REE-uh", "mesotes":"meh-SOH-tayz"
 ,
+  "Symposium":"sim-POH-zee-um", "Diotima":"dy-oh-TEE-muh", "Aristophanes":"arr-iss-TOF-uh-neez",
+  "Alcibiades":"al-suh-BY-uh-deez", "Agathon":"AG-uh-thon", "Eros":"AIR-oss (or EER-oss)",
+  "scala amoris":"SKAH-lah uh-MOR-iss", "Mantinea":"man-tih-NEE-uh",
+  "Marcus Aurelius":"MAR-kus aw-REE-lee-us", "Epictetus":"ep-ik-TEE-tus",
+  "Commodus":"KOM-uh-dus", "Zeno of Citium":"ZEE-noh · SISH-ee-um",
+  "Ta eis heauton":"tah ays heh-ow-TON", "logos":"LOH-goss", "amor fati":"AH-mor FAH-tee",
+  "apatheia":"ap-uh-THAY-uh", "Carnuntum":"kar-NUN-tum", "the Stoa":"STOH-uh",
+  "Michel de Montaigne":"mee-SHEL duh mon-TAYN", "Montaigne":"mon-TAYN",
+  "Étienne de La Boétie":"ay-TYEN duh lah bo-ay-SEE", "John Florio":"FLOR-ee-oh",
+  "Raymond Sebond":"ray-MON suh-BON", "essai":"eh-SAY", "Que sais-je?":"kuh SEZH",
+  "Pyrrhonism":"PIRR-uh-niz-um", "Bordeaux":"bor-DOH",
+  "Gilgamesh":"GIL-guh-mesh", "Enkidu":"EN-kee-doo", "Shamhat":"SHAM-hat",
+  "Utnapishtim":"oot-nuh-PISH-tim", "Ishtar":"ISH-tar", "Humbaba":"hoom-BAH-buh",
+  "Siduri":"sih-DOO-ree", "Ninsun":"NIN-soon", "Uruk":"OO-rook",
+  "cuneiform":"kyoo-NEE-uh-form",
   "Noah":"NOH-uh", "Cain and Abel":"KAYN · AY-bul", "Isaac & the binding":"EYE-zik",
   "the Akedah":"ah-kay-DAH", "Jerusalem":"juh-ROO-suh-lem", "Monica":"MON-ih-kuh",
   "Charon & the classical damned":"KAIR-on", "Minos":"MY-noss", "Styx":"STIKS",
@@ -3402,6 +3738,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
 
 // boot — a deep link always wins; otherwise resume where you left off
 (async function boot(){
+  syncMasthead();
   const hash = (location.hash || "").replace("#/","");
   let saved = null;
   if (!hash){

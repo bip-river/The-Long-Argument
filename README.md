@@ -1,10 +1,10 @@
 # The Long Argument
 
-Briefings on 22 foundational works of Western literature and philosophy, from Homer to Joyce.
-Not a reading list — an argument that runs across 2,800 years and never resolves.
+Briefings on 26 foundational works of Western literature and philosophy, from Gilgamesh to Joyce.
+Not a reading list — an argument that runs across 4,000 years and never resolves.
 
 **Three ways in:** by argument (eight threads), by date (the timeline), or by form
-(epic, drama, philosophy, confession, the novel).
+(scripture & myth, epic, drama, philosophy, confession, the essay, the novel).
 
 ## Deploy
 
